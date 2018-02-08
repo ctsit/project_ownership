@@ -1,2 +1,2 @@
-# collect_project_ownership_at_creation
+# REDCap Project Ownership
 A REDCap module to enforce the collection of ownership details at project creation
