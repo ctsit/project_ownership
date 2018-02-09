@@ -1,10 +1,61 @@
 $(document).ready(function() {
     if ($('#row_purpose').length === 0) {
         $('form table tbody').prepend(projectOwnership.fieldsetContents);
+
+        var $submit = $('form input[type="submit"]');
+        var submitCallback = function() {
+            $('#form').submit();
+            return false;
+        }
     }
     else {
         $('#row_purpose').after(projectOwnership.fieldsetContents);
+        var $submit = $('form table tr').last().find('td button').first();
+        var submitCallback = $submit[0].onclick;
     }
+
+    var $username = $('[name="project_ownership_username"]');
+
+    // Overriding onclick callback of submit buttons.
+    $submit[0].onclick = function(event) {
+        var userId = $username.val();
+        if (userId === '') {
+            var fieldName = false;
+
+            $('.owner-required-info').each(function() {
+                if ($(this).val() === '') {
+                    fieldName = $(this).siblings('.owner-info-label').text();
+                    simpleDialog('Please provide a valid ' + fieldName  + '.', 'Invalid ' + fieldName + '.');
+                    return false;
+                }
+            });
+
+            if (fieldName) {
+                return false;
+            }
+
+            // Go ahead with normal procedure.
+            return submitCallback();
+        }
+        else {
+            $.ajax({
+                url: app_path_webroot + 'UserRights/search_user.php',
+                data: {term: userId},
+                dataType: 'json'
+            })
+            .success(function(result) {
+                if (result.length === 0 || result[0].value !== userId) {
+                    simpleDialog('Please provide a valid REDCap username.', 'Invalid REDCap username.');
+                    return false;
+                }
+
+                // Go ahead with normal procedure.
+                return submitCallback();
+            });
+
+            return false;
+        }
+    };
 
     $.each(['firstname', 'lastname', 'email'], function(i, val) {
         $('[name="project_pi_' + val + '"]').change(function() {
@@ -14,7 +65,6 @@ $(document).ready(function() {
         });
     });
 
-    var $username = $('[name="project_ownership_username"]');
     $username.autocomplete({
         source: app_path_webroot + 'UserRights/search_user.php?searchEmail=1',
         minLength: 2,
@@ -33,14 +83,17 @@ $(document).ready(function() {
 
     var switchUserInfoFieldsStatus = function() {
         if ($username.val() === '') {
-            $('.user-info').removeAttr('disabled').parent().removeClass('disabled');
+            $('.owner-required-info').removeAttr('disabled').parent().removeClass('disabled');
         }
         else {
-            $('.user-info').attr('disabled', 'disabled').val('').parent().addClass('disabled');
+            $('.owner-required-info').attr('disabled', 'disabled').val('').parent().addClass('disabled');
         }
     }
 
+    switchUserInfoFieldsStatus();
+
     $username.on('input', switchUserInfoFieldsStatus);
+    $username.change(switchUserInfoFieldsStatus);
 
     $username.keydown(function() {
         var userParts = trim($(this).val()).split(' ');
@@ -51,7 +104,7 @@ $(document).ready(function() {
 
     $('.project_ownership_auto_assign').click(function(event) {
         $username.val(projectOwnership.userId);
-        switchUserInfoFieldsStatus();
+        $username.change();
 
         event.preventDefault();
         return false;

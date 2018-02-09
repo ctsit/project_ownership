@@ -22,6 +22,11 @@ form[name="createdb"] .cc_label {
     font-weight: bold;
 }
 
+img.search-icon {
+    margin-left: -25px;
+    margin-right: 6px;
+}
+
 a.project_ownership_auto_assign {
     font-size: 10px;
     text-decoration: underline;
