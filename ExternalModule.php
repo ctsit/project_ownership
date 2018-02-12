@@ -50,7 +50,7 @@ class ExternalModule extends AbstractExternalModule {
             $pid = db_escape($_GET['project']);
         }
 
-        $suffixes = array('username', 'firstname', 'lastname', 'email', 'comments');
+        $suffixes = empty($_POST['username']) ? array('username', 'firstname', 'lastname', 'email', 'comments') : array('username');
 
         $values = array();
         if ($this->getProjectOwnership($pid)) {
@@ -132,7 +132,7 @@ class ExternalModule extends AbstractExternalModule {
 
         $data .= RCView::img(array('class' => 'search-icon', 'src' => APP_PATH_IMAGES . 'magnifier.png'));
         $data .= RCView::a(array('href' => '#', 'class' => 'project_ownership_auto_assign'), '(I am the owner)');
-        $data .= RCView::div(array('class' => 'newdbsub'), 'If the project owner does not have a REDCap account, fill the information manually below.');
+        $data .= RCView::div(array('class' => 'newdbsub'), 'If the project owner does not have a REDCap account, leave this field blank and fill the information manually below.');
 
         $name_fields = '';
         foreach (array('firstname' => 'First name', 'lastname' => 'Last name') as $suffix => $label) {
@@ -161,7 +161,13 @@ class ExternalModule extends AbstractExternalModule {
             'valign' => 'top',
         );
 
-        $this->setJsSettings(array('fieldsetContents' => RCView::tr($attrs, $data), 'userId' => USERID));
+        $settings = array(
+            'fieldsetContents' => RCView::tr($attrs, $data),
+            'userId' => USERID,
+            'userInfoAjaxPath' => $this->getUrl('plugins/user_info_ajax.php'),
+        );
+
+        $this->setJsSettings($settings);
         $this->includeJs('js/owner-fieldset.js');
         $this->includeCss('css/owner-fieldset.css');
     }
@@ -189,8 +195,8 @@ class ExternalModule extends AbstractExternalModule {
     /**
      * Sets JS settings.
      *
-     * @param mixed $value
-     *   The setting value.
+     * @param mixed $settings
+     *   The setting settings.
      */
     protected function setJsSettings($settings) {
         echo '<script>projectOwnership = ' . json_encode($settings) . ';</script>';

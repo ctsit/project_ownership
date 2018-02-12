@@ -38,20 +38,15 @@ $(document).ready(function() {
             return submitCallback();
         }
         else {
-            $.ajax({
-                url: app_path_webroot + 'UserRights/search_user.php',
-                data: {term: userId},
-                dataType: 'json'
-            })
-            .success(function(result) {
-                if (result.length === 0 || result[0].value !== userId) {
+            $.get(projectOwnership.userInfoAjaxPath, {username: userId}, function(result) {
+                if (!result.success) {
                     simpleDialog('Please provide a valid REDCap username.', 'Invalid REDCap username.');
                     return false;
                 }
 
                 // Go ahead with normal procedure.
                 return submitCallback();
-            });
+            }, 'json');
 
             return false;
         }
@@ -71,6 +66,7 @@ $(document).ready(function() {
         delay: 150,
         select: function(event, ui) {
             $(this).val(ui.item.value);
+            $(this).change();
             return false;
         }
     })
@@ -82,11 +78,20 @@ $(document).ready(function() {
     };
 
     var switchUserInfoFieldsStatus = function() {
-        if ($username.val() === '') {
+        var userId = $username.val();
+
+        if (userId === '') {
             $('.owner-required-info').removeAttr('disabled').parent().removeClass('disabled');
         }
         else {
             $('.owner-required-info').attr('disabled', 'disabled').val('').parent().addClass('disabled');
+            $.get(projectOwnership.userInfoAjaxPath, {username: userId}, function(result) {
+                if (result.success) {
+                    $.each(result.data, function(key, value) {
+                        $('[name="project_ownership_' + key + '"').val(value);
+                    });
+                }
+            }, 'json');
         }
     }
 

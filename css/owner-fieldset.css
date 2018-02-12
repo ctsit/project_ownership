@@ -1,7 +1,8 @@
 form#form #project_ownership_username,
 form#form #project_ownership_email,
 form[name="createdb"] #project_ownership_username,
-form[name="createdb"] #project_ownership_email {
+form[name="createdb"] #project_ownership_email,
+#project_ownership-tr .newdbsub {
     width: 75%;
     max-width: 450px;
 }
@@ -35,7 +36,7 @@ a.project_ownership_auto_assign {
 .project_ownership_name_wrapper {
     width: 75%;
     max-width: 450px;
-    margin-top: 20px;
+    margin-top: 15px;
 }
 
 .project_ownership_name_wrapper div {
