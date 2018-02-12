@@ -1,5 +1,6 @@
 $(document).ready(function() {
     if ($('#row_purpose').length === 0) {
+        // Place ownership fieldset at project edit page.
         $('form table tbody').prepend(projectOwnership.fieldsetContents);
 
         var $submit = $('form input[type="submit"]');
@@ -9,6 +10,8 @@ $(document).ready(function() {
         }
     }
     else {
+        // Place ownership fieldset at project create page, right after
+        // "Purpose" field.
         $('#row_purpose').after(projectOwnership.fieldsetContents);
         var $submit = $('form table tr').last().find('td button').first();
         var submitCallback = $submit[0].onclick;
@@ -20,6 +23,7 @@ $(document).ready(function() {
     $submit[0].onclick = function(event) {
         var userId = $username.val();
         if (userId === '') {
+            // If username is not set, we need to check for required fields.
             var fieldName = false;
 
             $('.owner-required-info').each(function() {
@@ -38,6 +42,7 @@ $(document).ready(function() {
             return submitCallback();
         }
         else {
+            // If username is set, we need to check it is valid.
             $.get(projectOwnership.userInfoAjaxPath, {username: userId}, function(result) {
                 if (!result.success) {
                     simpleDialog('Please provide a valid REDCap username.', 'Invalid REDCap username.');
@@ -52,6 +57,8 @@ $(document).ready(function() {
         }
     };
 
+    // Autocompleting first name, last name and email fields as the respective
+    // PI fields are filled out.
     $.each(['firstname', 'lastname', 'email'], function(i, val) {
         $('[name="project_pi_' + val + '"]').change(function() {
             if (!$('[name="project_ownership_username"]').val()) {
@@ -60,6 +67,7 @@ $(document).ready(function() {
         });
     });
 
+    // Setting up autocomplete for username field.
     $username.autocomplete({
         source: app_path_webroot + 'UserRights/search_user.php?searchEmail=1',
         minLength: 2,
@@ -77,14 +85,20 @@ $(document).ready(function() {
             .appendTo(ul);
     };
 
-    var switchUserInfoFieldsStatus = function() {
+    // Update callback for Username field.
+    var usernameFieldUpdateCallback = function() {
         var userId = $username.val();
 
         if (userId === '') {
             $('.owner-required-info').removeAttr('disabled').parent().removeClass('disabled');
         }
         else {
+            // If username field is not empty, clear up and disable first name,
+            // last name, and email fields.
             $('.owner-required-info').attr('disabled', 'disabled').val('').parent().addClass('disabled');
+
+            // If the given username is valid, fill out first name, last name
+            // and email by pulling account information.
             $.get(projectOwnership.userInfoAjaxPath, {username: userId}, function(result) {
                 if (result.success) {
                     $.each(result.data, function(key, value) {
@@ -95,18 +109,14 @@ $(document).ready(function() {
         }
     }
 
-    switchUserInfoFieldsStatus();
+    // Setting up initial fieldset state.
+    usernameFieldUpdateCallback();
 
-    $username.on('input', switchUserInfoFieldsStatus);
-    $username.change(switchUserInfoFieldsStatus);
+    // Listening changes on username field.
+    $username.on('input', usernameFieldUpdateCallback);
+    $username.change(usernameFieldUpdateCallback);
 
-    $username.keydown(function() {
-        var userParts = trim($(this).val()).split(' ');
-
-        $(this).val(trim(userParts[0]));
-        $(this).trigger('focus');
-    });
-
+    // Handling ownership auto assign link.
     $('.project_ownership_auto_assign').click(function(event) {
         $username.val(projectOwnership.userId);
         $username.change();
@@ -115,6 +125,7 @@ $(document).ready(function() {
         return false;
     });
 
+    // Validating email field.
     $('[name="project_ownership_email"]').blur(function() {
         if (redcap_validate(this, '', '', 'hard', 'email')) {
             emailInDomainWhitelist(this);
