@@ -56,7 +56,6 @@ class ExternalModule extends AbstractExternalModule {
                 email VARCHAR(128),
                 firstname VARCHAR(128),
                 lastname VARCHAR(128),
-                comments TEXT,
                 PRIMARY KEY (pid)
             )';
 
@@ -205,7 +204,7 @@ class ExternalModule extends AbstractExternalModule {
         }
 
         // If username is set, leave the others as blank.
-        $suffixes = empty($_POST['username']) ? array('username', 'firstname', 'lastname', 'email', 'comments') : array('username');
+        $suffixes = empty($_POST['username']) ? array('username', 'firstname', 'lastname', 'email') : array('username');
 
         $values = array();
         if ($this->getProjectOwnership($pid)) {

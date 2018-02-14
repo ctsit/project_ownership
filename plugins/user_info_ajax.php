@@ -9,7 +9,7 @@ if (isset($_GET['username'])) {
         $result['success'] = true;
         $result['data'] = array();
 
-        foreach (array('firstname', 'lastname', 'email', 'comments') as $key) {
+        foreach (array('firstname', 'lastname', 'email') as $key) {
             $result['data'][$key] = $user_info['user_' . $key];
         }
     }
