@@ -38,11 +38,7 @@ class ExternalModule extends AbstractExternalModule {
     /**
      * @inheritdoc
      */
-    function redcap_module_system_enable($prefix, $version) {
-        if ($this->PREFIX != $prefix) {
-            return;
-        }
-
+    function redcap_module_system_enable($version) {
         $q = $this->query('SHOW TABLES LIKE "redcap_project_ownership"');
         if (db_num_rows($q)) {
             return;
@@ -65,15 +61,11 @@ class ExternalModule extends AbstractExternalModule {
     /**
      * @inheritdoc
      */
-    function redcap_module_system_disable($prefix, $version) {
+    function redcap_module_system_disable($version) {
         // Avoiding this table to be erased due to automatic module disable on
         // External Modules error handling.
         // TODO: remove it if and when this error handling becomes configurable.
         return;
-
-        if ($this->PREFIX != $prefix) {
-            return;
-        }
 
         $q = $this->query('SHOW TABLES LIKE "redcap_project_ownership"');
         if (!db_num_rows($q)) {
@@ -96,7 +88,7 @@ class ExternalModule extends AbstractExternalModule {
          *
          * TODO: remove it when it is not needed anymore.
          */
-        $this->redcap_module_system_enable($this->PREFIX, $this->VERSION);
+        $this->redcap_module_system_enable($this->VERSION);
 
         $project_ownership = array('username' => '', 'firstname' => '', 'lastname' => '', 'email' => '');
         if ($project_id) {
