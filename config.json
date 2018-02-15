@@ -29,5 +29,9 @@
             "email": "tbembersimeao@ufl.edu",
             "institution": "University of Florida - CTSI"
         }
-    ]
+    ],
+    "enable-every-page-hooks-on-system-pages": true,
+    "compatibility": {
+        "redcap-version-min": "8.0.0"
+    }
 }
