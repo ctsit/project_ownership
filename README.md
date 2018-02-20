@@ -2,7 +2,7 @@
 A REDCap module to enforce the collection of ownership details at project creation.
 
 ## Prerequisites
-- REDCap >= 8.0.0
+- REDCap >= 8.0.3
 
 ## Installation
 - Clone this repo into `<redcap-root>/modules/project_ownership_v<version_number>`.
