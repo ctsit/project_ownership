@@ -3,6 +3,26 @@ $(document).ready(function() {
     // "Purpose" field.
     $('#row_purpose').after(projectOwnership.fieldsetContents);
 
+    // Setting up autocomplete for username field.
+    var $username = $('[name="project_ownership_username"]');
+
+    $username.autocomplete({
+        source: app_path_webroot + 'UserRights/search_user.php?searchEmail=1',
+        minLength: 2,
+        delay: 150,
+        select: function(event, ui) {
+            $(this).val(ui.item.value);
+            $(this).change();
+            return false;
+        }
+    })
+    .data('ui-autocomplete')._renderItem = function(ul, item) {
+        return $('<li></li>')
+            .data('item', item)
+            .append('<a>' + item.label + '</a>')
+            .appendTo(ul);
+    };
+
     // Overriding submit callbacks for each case: create and edit project
     // settings.
     if (projectOwnership.projectId) {
@@ -27,8 +47,6 @@ $(document).ready(function() {
         var $submit = $('form table tr').last().find('td button').first();
         $submit[0].onclick = projectOwnershipSubmit;
     }
-
-    var $username = $('[name="project_ownership_username"]');
 
     // The new submit callback, that runs extra validation checks for project
     // ownership fields.
@@ -82,24 +100,6 @@ $(document).ready(function() {
             }
         });
     });
-
-    // Setting up autocomplete for username field.
-    $username.autocomplete({
-        source: app_path_webroot + 'UserRights/search_user.php?searchEmail=1',
-        minLength: 2,
-        delay: 150,
-        select: function(event, ui) {
-            $(this).val(ui.item.value);
-            $(this).change();
-            return false;
-        }
-    })
-    .data('ui-autocomplete')._renderItem = function(ul, item) {
-        return $('<li></li>')
-            .data('item', item)
-            .append('<a>' + item.label + '</a>')
-            .appendTo(ul);
-    };
 
     // Update callback for Username field.
     var usernameFieldUpdateCallback = function() {

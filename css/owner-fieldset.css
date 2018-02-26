@@ -45,3 +45,7 @@ a.po-auto-assign {
 .disabled {
     opacity: 0.5;
 }
+
+.ui-autocomplete.ui-menu {
+    z-index: 200;
+}
