@@ -23,6 +23,63 @@ $(document).ready(function() {
             .appendTo(ul);
     };
 
+    // Update callback for Username field.
+    var usernameFieldUpdateCallback = function() {
+        var userId = $username.val();
+
+        if (userId === '') {
+            $('.po-required-info').removeAttr('disabled').parent().removeClass('disabled');
+        }
+        else {
+            // If username field is not empty, clear up and disable first name,
+            // last name, and email fields.
+            $('.po-required-info').attr('disabled', 'disabled').val('').parent().addClass('disabled');
+
+            // If the given username is valid, fill out first name, last name
+            // and email by pulling account information.
+            $.get(projectOwnership.userInfoAjaxPath, {username: userId}, function(result) {
+                if (result.success) {
+                    $.each(result.data, function(key, value) {
+                        $('[name="project_ownership_' + key + '"').val(value);
+                    });
+                }
+            }, 'json');
+        }
+    }
+
+    // Setting up initial fieldset state.
+    usernameFieldUpdateCallback();
+
+    // Listening changes on username field.
+    $username.on('input', usernameFieldUpdateCallback);
+    $username.change(usernameFieldUpdateCallback);
+
+    // Autocompleting first name, last name and email fields as the respective
+    // PI fields are filled out.
+    $.each(['firstname', 'lastname', 'email'], function(i, val) {
+        $('[name="project_pi_' + val + '"]').change(function() {
+            if (!$('[name="project_ownership_username"]').val()) {
+                $('[name="project_ownership_' + val + '"]').val($(this).val());
+            }
+        });
+    });
+
+    // Handling ownership auto assign link.
+    $('.po-auto-assign').click(function(event) {
+        $username.val(projectOwnership.userId);
+        $username.change();
+
+        event.preventDefault();
+        return false;
+    });
+
+    // Validating email field.
+    $('[name="project_ownership_email"]').blur(function() {
+        if (redcap_validate(this, '', '', 'hard', 'email')) {
+            emailInDomainWhitelist(this);
+        }
+    });
+
     // Overriding submit callbacks for each case: create and edit project
     // settings.
     if (projectOwnership.projectId) {
@@ -90,61 +147,4 @@ $(document).ready(function() {
             return false;
         }
     }
-
-    // Autocompleting first name, last name and email fields as the respective
-    // PI fields are filled out.
-    $.each(['firstname', 'lastname', 'email'], function(i, val) {
-        $('[name="project_pi_' + val + '"]').change(function() {
-            if (!$('[name="project_ownership_username"]').val()) {
-                $('[name="project_ownership_' + val + '"]').val($(this).val());
-            }
-        });
-    });
-
-    // Update callback for Username field.
-    var usernameFieldUpdateCallback = function() {
-        var userId = $username.val();
-
-        if (userId === '') {
-            $('.po-required-info').removeAttr('disabled').parent().removeClass('disabled');
-        }
-        else {
-            // If username field is not empty, clear up and disable first name,
-            // last name, and email fields.
-            $('.po-required-info').attr('disabled', 'disabled').val('').parent().addClass('disabled');
-
-            // If the given username is valid, fill out first name, last name
-            // and email by pulling account information.
-            $.get(projectOwnership.userInfoAjaxPath, {username: userId}, function(result) {
-                if (result.success) {
-                    $.each(result.data, function(key, value) {
-                        $('[name="project_ownership_' + key + '"').val(value);
-                    });
-                }
-            }, 'json');
-        }
-    }
-
-    // Setting up initial fieldset state.
-    usernameFieldUpdateCallback();
-
-    // Listening changes on username field.
-    $username.on('input', usernameFieldUpdateCallback);
-    $username.change(usernameFieldUpdateCallback);
-
-    // Handling ownership auto assign link.
-    $('.po-auto-assign').click(function(event) {
-        $username.val(projectOwnership.userId);
-        $username.change();
-
-        event.preventDefault();
-        return false;
-    });
-
-    // Validating email field.
-    $('[name="project_ownership_email"]').blur(function() {
-        if (redcap_validate(this, '', '', 'hard', 'email')) {
-            emailInDomainWhitelist(this);
-        }
-    });
 });
