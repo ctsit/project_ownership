@@ -1,34 +1,44 @@
 $(document).ready(function() {
-    if ($('#row_purpose').length === 0) {
-        // Place ownership fieldset at project edit page.
-        $('form table tbody').prepend(projectOwnership.fieldsetContents);
+    // Place ownership fieldset at project create/edit page, right after
+    // "Purpose" field.
+    $('#row_purpose').after(projectOwnership.fieldsetContents);
 
-        var $submit = $('form input[type="submit"]');
+    if (projectOwnership.projectId) {
         var submitCallback = function() {
-            $('#form').submit();
-            return false;
-        }
+            $('#editprojectform').submit();
+        };
+
+        $('#edit_project').on('dialogopen', function() {
+            var buttons = $(this).dialog('option', 'buttons');
+            buttons.Save = projectOwnershipSubmit;
+            $(this).dialog('option', 'buttons', buttons);
+        });
     }
     else {
-        // Place ownership fieldset at project create page, right after
-        // "Purpose" field.
-        $('#row_purpose').after(projectOwnership.fieldsetContents);
+        var submitCallback = function() {
+            document.createdb.submit();
+        };
+
         var $submit = $('form table tr').last().find('td button').first();
-        var submitCallback = $submit[0].onclick;
+        $submit[0].onclick = projectOwnershipSubmit;
     }
 
     var $username = $('[name="project_ownership_username"]');
 
     // Overriding onclick callback of submit buttons.
-    $submit[0].onclick = function(event) {
+    function projectOwnershipSubmit() {
+        if (!setFieldsCreateFormChk()) {
+            return false;
+        }
+
         var userId = $username.val();
         if (userId === '') {
             // If username is not set, we need to check for required fields.
             var fieldName = false;
 
-            $('.owner-required-info').each(function() {
+            $('.po-required-info').each(function() {
                 if ($(this).val() === '') {
-                    fieldName = $(this).siblings('.owner-info-label').text();
+                    fieldName = $(this).siblings('.po-info-label').text();
                     simpleDialog('Please provide a valid ' + fieldName  + '.', 'Invalid ' + fieldName + '.');
                     return false;
                 }
@@ -55,7 +65,7 @@ $(document).ready(function() {
 
             return false;
         }
-    };
+    }
 
     // Autocompleting first name, last name and email fields as the respective
     // PI fields are filled out.
@@ -90,12 +100,12 @@ $(document).ready(function() {
         var userId = $username.val();
 
         if (userId === '') {
-            $('.owner-required-info').removeAttr('disabled').parent().removeClass('disabled');
+            $('.po-required-info').removeAttr('disabled').parent().removeClass('disabled');
         }
         else {
             // If username field is not empty, clear up and disable first name,
             // last name, and email fields.
-            $('.owner-required-info').attr('disabled', 'disabled').val('').parent().addClass('disabled');
+            $('.po-required-info').attr('disabled', 'disabled').val('').parent().addClass('disabled');
 
             // If the given username is valid, fill out first name, last name
             // and email by pulling account information.
@@ -117,7 +127,7 @@ $(document).ready(function() {
     $username.change(usernameFieldUpdateCallback);
 
     // Handling ownership auto assign link.
-    $('.project_ownership_auto_assign').click(function(event) {
+    $('.po-auto-assign').click(function(event) {
         $username.val(projectOwnership.userId);
         $username.change();
 

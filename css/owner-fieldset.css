@@ -1,26 +1,31 @@
-form#form #project_ownership_username,
-form#form #project_ownership_email,
-form[name="createdb"] #project_ownership_username,
-form[name="createdb"] #project_ownership_email,
-#project_ownership-tr .newdbsub {
-    width: 75%;
-    max-width: 450px;
-}
-
-form[name="createdb"] #project_ownership-tr .cc_label,
-form[name="createdb"] #project_ownership-tr .cc_data {
+.po-col {
     padding-top: 25px;
     padding-bottom: 40px;
 }
 
-form#form .project_ownership_name_wrapper input,
-form[name="createdb"] .project_ownership_name_wrapper input {
-    max-width: 100%;
-    width: 100%;
+.po-label {
+    font-weight: bold;
 }
 
-form[name="createdb"] .cc_label {
-    font-weight: bold;
+.po-row {
+    width: 75%;
+    max-width: 450px;
+}
+
+.po-name-wrapper {
+    width: 75%;
+    max-width: 450px;
+    margin-top: 15px;
+}
+
+.po-name-wrapper div {
+    float: left;
+    width: 50%;
+}
+
+.po-name-wrapper input {
+    max-width: 100%;
+    width: 100%;
 }
 
 img.search-icon {
@@ -28,20 +33,9 @@ img.search-icon {
     margin-right: 6px;
 }
 
-a.project_ownership_auto_assign {
+a.po-auto-assign {
     font-size: 10px;
     text-decoration: underline;
-}
-
-.project_ownership_name_wrapper {
-    width: 75%;
-    max-width: 450px;
-    margin-top: 15px;
-}
-
-.project_ownership_name_wrapper div {
-    float: left;
-    width: 50%;
 }
 
 .required-ast {
