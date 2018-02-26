@@ -3,29 +3,35 @@ $(document).ready(function() {
     // "Purpose" field.
     $('#row_purpose').after(projectOwnership.fieldsetContents);
 
+    // Overriding submit callbacks for each case: create and edit project
+    // settings.
     if (projectOwnership.projectId) {
-        var submitCallback = function() {
+        var saveCallback = function() {
             $('#editprojectform').submit();
         };
 
         $('#edit_project').on('dialogopen', function() {
             var buttons = $(this).dialog('option', 'buttons');
+
+            // Overriding dialog's save button.
             buttons.Save = projectOwnershipSubmit;
             $(this).dialog('option', 'buttons', buttons);
         });
     }
     else {
-        var submitCallback = function() {
+        var saveCallback = function() {
             document.createdb.submit();
         };
 
+        // Overriding submit button's click callback.
         var $submit = $('form table tr').last().find('td button').first();
         $submit[0].onclick = projectOwnershipSubmit;
     }
 
     var $username = $('[name="project_ownership_username"]');
 
-    // Overriding onclick callback of submit buttons.
+    // The new submit callback, that runs extra validation checks for project
+    // ownership fields.
     function projectOwnershipSubmit() {
         if (!setFieldsCreateFormChk()) {
             return false;
@@ -49,7 +55,7 @@ $(document).ready(function() {
             }
 
             // Go ahead with normal procedure.
-            return submitCallback();
+            saveCallback();
         }
         else {
             // If username is set, we need to check it is valid.
@@ -60,7 +66,7 @@ $(document).ready(function() {
                 }
 
                 // Go ahead with normal procedure.
-                return submitCallback();
+                saveCallback();
             }, 'json');
 
             return false;
