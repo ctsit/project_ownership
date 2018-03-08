@@ -141,7 +141,7 @@ class ExternalModule extends AbstractExternalModule {
         $output .= RCView::div(array('class' => 'po-name-wrapper clearfix'), $name_fields);
 
         // Email field.
-        $output .= RCView::div(array(), $req_ast . RCView::span(array('class' => 'owner-info-label'), 'Email') . RCView::br() . RCView::text(array(
+        $output .= RCView::div(array(), $req_ast . RCView::span(array('class' => 'po-info-label'), 'Email') . RCView::br() . RCView::text(array(
             'id' => 'project_ownership_email',
             'name' => 'project_ownership_email',
             'class' => 'x-form-text x-form-field po-required-info po-row',
