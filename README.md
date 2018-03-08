@@ -24,6 +24,6 @@ If the purpose of the project is "Research", the ownership fields are auto compl
 ![Autocomplete from PI information](img/pi_autocomplete.gif)
 
 ## Checking and updating project ownership
-The same fieldset from project creation page may be seen at project settings page. There, users are able to check and update ownership information.
+The same fieldset from project creation page may be seen at project settings modal - where users are able to check and update ownership information.
 
 ![Project settings page](img/edit_project.png)

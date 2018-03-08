@@ -18,10 +18,10 @@ class ExternalModule extends AbstractExternalModule {
     /**
      * @inheritdoc
      */
-    function redcap_every_page_before_render() {
+    function redcap_every_page_before_render($project_id) {
         // Saving onwership when project create or edit form is submitted.
-        if (in_array(PAGE, array('ControlCenter/edit_project.php', 'ProjectGeneral/create_project.php')) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-            $this->saveProjectOwnership();
+        if (in_array(PAGE, array('ProjectGeneral/edit_project_settings.php', 'ProjectGeneral/create_project.php')) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+            $this->saveProjectOwnership($project_id);
         }
     }
 
@@ -30,8 +30,8 @@ class ExternalModule extends AbstractExternalModule {
      */
     function redcap_every_page_top($project_id) {
         // The ownership fieldset is only placed on create and edit project forms.
-        if ((strpos(PAGE, 'redcap/index.php') === 0 && !empty($_GET['action']) && $_GET['action'] == 'create') || PAGE == 'ControlCenter/edit_project.php') {
-            $this->buildOwnershipFieldset(empty($_GET['project']) ? null : $_GET['project']);
+        if ((strpos(PAGE, 'redcap/index.php') === 0 && !empty($_GET['action']) && $_GET['action'] == 'create') || PAGE == 'ProjectSetup/index.php') {
+            $this->buildOwnershipFieldset($project_id);
         }
     }
 
@@ -90,69 +90,73 @@ class ExternalModule extends AbstractExternalModule {
          */
         $this->redcap_module_system_enable($this->VERSION);
 
-        $project_ownership = array('username' => '', 'firstname' => '', 'lastname' => '', 'email' => '');
+        // Setting up default values.
+        $po_data = array(
+            'username' => '',
+            'firstname' => '',
+            'lastname' => '',
+            'email' => '',
+        );
+
         if ($project_id) {
             // Loading stored values.
-            $project_ownership = $this->getProjectOwnership($project_id);
+            $po_data = $this->getProjectOwnership($project_id);
         }
 
         // Required field marker.
         $req_ast = RCView::span(array('class' => 'required-ast'), '*') . ' ';
 
         // Username field.
-        $data = RCView::span(array(), 'REDCap username (if applicable)') . RCView::br();
-        $data .= RCView::text(array(
+        $output = RCView::span(array(), 'REDCap username (if applicable)') . RCView::br();
+        $output .= RCView::text(array(
             'id' => 'project_ownership_username',
             'name' => 'project_ownership_username',
-            'class' => 'x-form-text x-form-field',
+            'class' => 'x-form-text x-form-field po-row',
             'placeholder' => 'Search',
-            'value' => $project_ownership['username'],
+            'value' => $po_data['username'],
         ));
 
         // Adding search icon to username field.
-        $data .= RCView::img(array('class' => 'search-icon', 'src' => APP_PATH_IMAGES . 'magnifier.png'));
+        $output .= RCView::img(array('class' => 'search-icon', 'src' => APP_PATH_IMAGES . 'magnifier.png'));
 
         // Adding ownership auto assign link.
-        $data .= RCView::a(array('href' => '#', 'class' => 'project_ownership_auto_assign'), '(I am the owner)');
+        $output .= RCView::a(array('href' => '#', 'class' => 'po-auto-assign'), '(I am the owner)');
 
         // Adding helper text to username field.
-        $data .= RCView::div(array('class' => 'newdbsub'), 'If the project owner does not have a REDCap account, leave this field blank and fill the information manually below.');
+        $output .= RCView::div(array('class' => 'newdbsub po-row'), 'If the project owner does not have a REDCap account, leave this field blank and fill the information manually below.');
 
         // Building first and last name fields.
         $name_fields = '';
         foreach (array('firstname' => 'First name', 'lastname' => 'Last name') as $suffix => $label) {
             $field_name = 'project_ownership_' . $suffix;
-            $name_fields .= RCView::div(array(), $req_ast . RCView::span(array('class' => 'owner-info-label'), $label) . RCView::br() . RCView::text(array(
+            $name_fields .= RCView::div(array(), $req_ast . RCView::span(array('class' => 'po-info-label'), $label) . RCView::br() . RCView::text(array(
                 'id' => $field_name,
                 'name' => $field_name,
-                'class' => 'x-form-text x-form-field owner-required-info',
-                'value' => $project_ownership[$suffix],
+                'class' => 'x-form-text x-form-field po-required-info',
+                'value' => $po_data[$suffix],
             )));
         }
 
         // Wrapping first and last name fields into a single row.
-        $data .= RCView::div(array('class' => 'project_ownership_name_wrapper clearfix'), $name_fields);
+        $output .= RCView::div(array('class' => 'po-name-wrapper clearfix'), $name_fields);
 
         // Email field.
-        $data .= RCView::div(array(), $req_ast . RCView::span(array('class' => 'owner-info-label'), 'Email') . RCView::br() . RCView::text(array(
+        $output .= RCView::div(array(), $req_ast . RCView::span(array('class' => 'po-info-label'), 'Email') . RCView::br() . RCView::text(array(
             'id' => 'project_ownership_email',
             'name' => 'project_ownership_email',
-            'class' => 'x-form-text x-form-field owner-required-info',
-            'value' => $project_ownership['email'],
+            'class' => 'x-form-text x-form-field po-required-info po-row',
+            'value' => $po_data['email'],
         )));
 
         // Fieldset title.
-        $data = RCView::td(array('class' => 'cc_label'), 'Project Ownership') . RCView::td(array('class' => 'cc_data'), $data);
+        $output = RCView::td(array('class' => 'po-label po-col'), 'Project Ownership') . RCView::td(array('class' => 'po-col'), $output);
 
         // Passing fieldset content to JS.
         $settings = array(
+            'projectId' => $project_id,
             'userId' => USERID,
             'userInfoAjaxPath' => $this->getUrl('plugins/user_info_ajax.php'),
-            'fieldsetContents' => RCView::tr(array(
-                'id' => 'project_ownership-tr',
-                'sq_id' => 'project_ownership',
-                'valign' => 'top',
-            ), $data),
+            'fieldsetContents' => RCView::tr(array('id' => 'po-tr', 'valign' => 'top'), $output),
         );
 
         $this->setJsSettings($settings);
@@ -177,49 +181,58 @@ class ExternalModule extends AbstractExternalModule {
     /**
      * Saves project ownership.
      */
-    protected function saveProjectOwnership() {
-        if (empty($_GET['project'])) {
+    protected function saveProjectOwnership($project_id) {
+        if (!$project_id) {
+            $project_id = 1;
+
             // If we are at project creation page, we need to calculate the ID
             // of the project being created.
+            //
             // TODO: improve this, since concurrent requests can lead to
             // inconsistencies.
             $q = $this->query('SELECT project_id FROM redcap_projects ORDER BY project_id DESC LIMIT 1');
-            $pid = 1;
 
             if (db_num_rows($q)) {
                 $row = db_fetch_assoc($q);
-                $pid += $row['project_id'];
+                $project_id += $row['project_id'];
             }
         }
-        else {
-            $pid = db_escape($_GET['project']);
-        }
 
-        // If username is set, leave the others as blank.
-        $suffixes = empty($_POST['username']) ? array('username', 'firstname', 'lastname', 'email') : array('username');
+        // Specifying required fields for each case.
+        $suffixes = array('username', 'firstname', 'lastname', 'email');
+        $required = empty($_POST['project_ownership_username']) ? array('firstname', 'lastname', 'email') : array('username');
+        $ownership_exists = $this->getProjectOwnership($project_id);
 
         $values = array();
-        if ($this->getProjectOwnership($pid)) {
-            // Updating an existing entry.
-            foreach ($suffixes as $suffix) {
-                $field_name = 'project_ownership_' . $suffix;
-                $values[] = $suffix . ' = ' . (empty($_POST[$field_name]) ? 'null' : '"' . db_escape($_POST[$field_name]) . '"');
-                unset($_POST[$field_name]);
+        foreach ($suffixes as $suffix) {
+            $field_name = 'project_ownership_' . $suffix;
+
+            if (!in_array($suffix, $required)) {
+                $value = 'null';
+            }
+            elseif (!empty($_POST[$field_name])) {
+                $value = '"' . db_escape($_POST[$field_name]) . '"';
+            }
+            else {
+                echo 'Missing ' . $suffix . ' field.';
+                exit;
             }
 
-            $this->query('UPDATE redcap_project_ownership SET ' . implode(', ', $values) . ' WHERE pid = ' . $pid);
+            $values[$suffix] = $ownership_exists ? $suffix . ' = ' . $value : $value;
+            unset($_POST[$field_name]);
+        }
+
+        if ($ownership_exists) {
+            // Updating an existing entry.
+            $sql = 'UPDATE redcap_project_ownership SET ' . implode(', ', $values) . ' WHERE pid = ' . $project_id;
         }
         else {
             // Creating a new entry.
-            $values['pid'] = $pid;
-            foreach ($suffixes as $suffix) {
-                $field_name = 'project_ownership_' . $suffix;
-                $values[$suffix] = empty($_POST[$field_name]) ? 'null' : '"' . db_escape($_POST[$field_name]) . '"';
-                unset($_POST[$field_name]);
-            }
-
-            $this->query('INSERT INTO redcap_project_ownership (' . implode(', ', array_keys($values)) . ') VALUES (' . implode(', ', $values) . ')');
+            $values['pid'] = $project_id;
+            $sql = 'INSERT INTO redcap_project_ownership (' . implode(', ', array_keys($values)) . ') VALUES (' . implode(', ', $values) . ')';
         }
+
+        $this->query($sql);
     }
 
     /**
