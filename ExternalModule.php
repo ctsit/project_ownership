@@ -198,31 +198,41 @@ class ExternalModule extends AbstractExternalModule {
             }
         }
 
-        // If username is set, leave the others as blank.
-        $suffixes = empty($_POST['username']) ? array('username', 'firstname', 'lastname', 'email') : array('username');
+        // Specifying required fields for each case.
+        $suffixes = array('username', 'firstname', 'lastname', 'email');
+        $required = empty($_POST['project_ownership_username']) ? array('firstname', 'lastname', 'email') : array('username');
+        $ownership_exists = $this->getProjectOwnership($project_id);
 
         $values = array();
-        if ($this->getProjectOwnership($project_id)) {
-            // Updating an existing entry.
-            foreach ($suffixes as $suffix) {
-                $field_name = 'project_ownership_' . $suffix;
-                $values[] = $suffix . ' = ' . (empty($_POST[$field_name]) ? 'null' : '"' . db_escape($_POST[$field_name]) . '"');
-                unset($_POST[$field_name]);
+        foreach ($suffixes as $suffix) {
+            $field_name = 'project_ownership_' . $suffix;
+
+            if (!in_array($suffix, $required)) {
+                $value = 'null';
+            }
+            elseif (!empty($_POST[$field_name])) {
+                $value = '"' . db_escape($_POST[$field_name]) . '"';
+            }
+            else {
+                echo 'Missing ' . $suffix . ' field.';
+                exit;
             }
 
-            $this->query('UPDATE redcap_project_ownership SET ' . implode(', ', $values) . ' WHERE pid = ' . $project_id);
+            $values[$suffix] = $ownership_exists ? $suffix . ' = ' . $value : $value;
+            unset($_POST[$field_name]);
+        }
+
+        if ($ownership_exists) {
+            // Updating an existing entry.
+            $sql = 'UPDATE redcap_project_ownership SET ' . implode(', ', $values) . ' WHERE pid = ' . $project_id;
         }
         else {
             // Creating a new entry.
             $values['pid'] = $project_id;
-            foreach ($suffixes as $suffix) {
-                $field_name = 'project_ownership_' . $suffix;
-                $values[$suffix] = empty($_POST[$field_name]) ? 'null' : '"' . db_escape($_POST[$field_name]) . '"';
-                unset($_POST[$field_name]);
-            }
-
-            $this->query('INSERT INTO redcap_project_ownership (' . implode(', ', array_keys($values)) . ') VALUES (' . implode(', ', $values) . ')');
+            $sql = 'INSERT INTO redcap_project_ownership (' . implode(', ', array_keys($values)) . ') VALUES (' . implode(', ', $values) . ')';
         }
+
+        $this->query($sql);
     }
 
     /**
