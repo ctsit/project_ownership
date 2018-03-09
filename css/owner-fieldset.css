@@ -1,0 +1,51 @@
+.po-col {
+    padding-top: 25px;
+    padding-bottom: 40px;
+}
+
+.po-label {
+    font-weight: bold;
+}
+
+.po-row {
+    width: 75%;
+    max-width: 450px;
+}
+
+.po-name-wrapper {
+    width: 75%;
+    max-width: 450px;
+    margin-top: 15px;
+}
+
+.po-name-wrapper div {
+    float: left;
+    width: 50%;
+}
+
+.po-name-wrapper input {
+    max-width: 100%;
+    width: 100%;
+}
+
+img.search-icon {
+    margin-left: -25px;
+    margin-right: 6px;
+}
+
+a.po-auto-assign {
+    font-size: 10px;
+    text-decoration: underline;
+}
+
+.required-ast {
+    color: #800000;
+}
+
+.disabled {
+    opacity: 0.5;
+}
+
+.ui-autocomplete.ui-menu {
+    z-index: 200;
+}
