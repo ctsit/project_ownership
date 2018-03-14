@@ -30,7 +30,7 @@ class ExternalModule extends AbstractExternalModule {
      */
     function redcap_every_page_top($project_id) {
         // The ownership fieldset is only placed on create and edit project forms.
-        if ((strpos(PAGE, 'redcap/index.php') === 0 && !empty($_GET['action']) && $_GET['action'] == 'create') || PAGE == 'ProjectSetup/index.php') {
+        if ((strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0 && !empty($_GET['action']) && $_GET['action'] == 'create') || PAGE == 'ProjectSetup/index.php') {
             $this->buildOwnershipFieldset($project_id);
         }
     }
