@@ -14,6 +14,7 @@ CREATE TABLE rcpo_test (
     PRIMARY KEY (pid)
 );
 
+truncate rcpo_test;
 
 -- PI:
 -- If owner is null and PI data is not null, then set owner to PI.
@@ -62,7 +63,7 @@ from redcap_projects as rcp
   left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
   left join paid_creators as pc on (pc.username = rcui.username)
 where (rcpo.email is null or rcpo.email = "")
-  and rcui.user_suspended_time is not null
+  and rcui.user_suspended_time is null
   and pc.username is null;
 -- Set owner to creator
 insert into rcpo_test (pid, username, email, firstname, lastname)
@@ -72,7 +73,7 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
       left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
       left join paid_creators as pc on (pc.username = rcui.username)
     where (rcpo.email is null or rcpo.email = "")
-      and rcui.user_suspended_time is not null
+      and rcui.user_suspended_time is null
       and pc.username is null;
 
 
