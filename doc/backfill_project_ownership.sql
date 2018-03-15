@@ -43,9 +43,12 @@ create table paid_creators (
 )
 collate utf8_unicode_ci;
 
+truncate paid_creators;
+
 insert into paid_creators (username) values ("tls");
 insert into paid_creators (username) values ("j.johnston");
 insert into paid_creators (username) values ("cabernat");
+insert into paid_creators (username) values ("c.holman");
 insert into paid_creators (username) values ("swehmeyer");
 
 
