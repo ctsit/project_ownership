@@ -237,7 +237,38 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
         and rcps.last_user is not null;
 
 
--- set owner to the most recently logged non-suspended, authorized user
+-- set owner to the most recently logged-in, suspended, authorized user
+-- Return the most recently logged suspended, authorized user by project
+select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname, max(rcui.user_lastlogin) as last_login
+from redcap_projects as rcp
+inner join redcap_project_stats as rcps on (rcp.project_id = rcps.project_id)
+left join redcap_user_rights as rcur on (rcp.project_id = rcur.project_id)
+left join redcap_user_roles as rcuro on (rcp.project_id = rcuro.project_id and rcur.role_id = rcuro.role_id)
+inner join redcap_user_information as rcui on (rcur.username = rcui.username)
+left join paid_creators as pc on (pc.username = rcui.username)
+left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
+where (rcpo.email is null or rcpo.email = "")
+    and pc.username is null
+group by rcp.project_id;
+
+-- set owner to the most recently logged suspended, authorized user by project
+insert into rcpo_test (pid, username, email, firstname, lastname)
+  select project_id, username, user_email, user_firstname, user_lastname from
+    (select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname, max(rcui.user_lastlogin) as last_login
+    from redcap_projects as rcp
+    inner join redcap_project_stats as rcps on (rcp.project_id = rcps.project_id)
+    left join redcap_user_rights as rcur on (rcp.project_id = rcur.project_id)
+    left join redcap_user_roles as rcuro on (rcp.project_id = rcuro.project_id and rcur.role_id = rcuro.role_id)
+    inner join redcap_user_information as rcui on (rcur.username = rcui.username)
+    left join paid_creators as pc on (pc.username = rcui.username)
+    left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
+    where (rcpo.email is null or rcpo.email = "")
+        and pc.username is null
+    group by rcp.project_id) as input_columns;
+
+
+
+
 -- Creator, but suspended: If owner is null and creator is not in paid_creators, then set owner to creator
 -- Paid Creator: If owner is null and creator is not suspended and creator is in paid_creators, then set owner to creator
 
