@@ -12,7 +12,7 @@ CREATE TABLE rcpo_test (
     firstname VARCHAR(128),
     lastname VARCHAR(128),
     PRIMARY KEY (pid)
-);
+) collate utf8_unicode_ci;
 
 truncate rcpo_test;
 
