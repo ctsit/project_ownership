@@ -348,18 +348,40 @@ CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
 
 -- set username where it is blank and the email address matches that of a REDCap user
 -- enumerate rows with issues and solutions
-select rcpo.pid, rcpo.username, rcpo.email, rcui.username
+select rcpo.pid, rcpo.username, rcpo.email, rcui.user_email, rcui.username
 from rcpo_test as rcpo
 left join redcap_user_information as rcui on (rcpo.email = rcui.user_email)
 where (rcpo.username is null or rcpo.username = '')
 and rcui.username is not null;
 
+select * from redcap_user_information
+where user_email = 'dcarden@ufl.edu';
+
 -- set usernames where possible
+-- Write data into a temporary table
+CREATE TABLE rcpo_temp (
+    pid INT NOT NULL,
+    username VARCHAR(128),
+    PRIMARY KEY (pid)
+) collate utf8_unicode_ci;
+
+truncate rcpo_temp;
+
+insert into rcpo_temp (pid, username)
 select rcpo.pid, rcui.username
 from rcpo_test as rcpo
 left join redcap_user_information as rcui on (rcpo.email = rcui.user_email)
 where (rcpo.username is null or rcpo.username = '')
-and rcui.username is not null;
+and rcui.username is not null
+and rcui.user_email != 'dcarden@ufl.edu';
+
+-- update the RCPO table
+update rcpo_test as rcpo
+set rcpo.username = (select rcpot.username from rcpo_temp as rcpot
+where rcpo.pid = rcpot.pid)
+where rcpo.username is null
+or rcpo.username = ""
+;
 
 
 select * FROM RCPO_TEST;
