@@ -331,6 +331,15 @@ firstname= "Corinne",
 lastname= "Holman"
 where rcpo_test.username = "cabernat";
 
+-- set ownership manually
+insert into rcpo_test (pid, username, email, firstname, lastname)
+values
+(101, "sattam", "maryam.sattari@medicine.ufl.edu", "Maryam", "Sattari");
+
+insert into rcpo_test (pid, username, email, firstname, lastname)
+values
+(624, "sgilbert", "sgilbert@ufl.edu", "Scott", "Gilbert");
+
 
 -- Fix collation in rcpo_test
 alter table rcpo_test
