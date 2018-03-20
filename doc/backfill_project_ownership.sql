@@ -267,9 +267,26 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
     group by rcp.project_id) as input_columns;
 
 
-
-
 -- Creator, but suspended: If owner is null and creator is not in paid_creators, then set owner to creator
+-- List owners to be set
+select rcp.project_id, rcui.username
+from redcap_projects as rcp
+  inner join redcap_user_information as rcui on (rcp.created_by = rcui.ui_id)
+  left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
+  left join paid_creators as pc on (pc.username = rcui.username)
+where (rcpo.email is null or rcpo.email = "")
+  and pc.username is null;
+-- Set owner to creator
+insert into rcpo_test (pid, username, email, firstname, lastname)
+    select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
+    from redcap_projects as rcp
+      inner join redcap_user_information as rcui on (rcp.created_by = rcui.ui_id)
+      left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
+      left join paid_creators as pc on (pc.username = rcui.username)
+    where (rcpo.email is null or rcpo.email = "")
+      and pc.username is null;
+
+
 -- Paid Creator: If owner is null and creator is not suspended and creator is in paid_creators, then set owner to creator
 
 
