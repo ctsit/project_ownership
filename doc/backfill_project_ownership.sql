@@ -52,7 +52,7 @@ insert into paid_creators (username) values ("c.holman");
 insert into paid_creators (username) values ("swehmeyer");
 
 
--- Creator: If owner is null and creator is not suspended and creator is not in paid_creators, then set owner to creator
+-- Creator: If owner is null and creator who logged-in during the last 180 days, is not suspended and creator is not in paid_creators, then set owner to creator
 -- Enumerate creators
 select rcp.project_id, rcui.username
 from redcap_projects as rcp inner join redcap_user_information as rcui on (rcp.created_by = rcui.ui_id)
@@ -67,6 +67,7 @@ from redcap_projects as rcp
   left join paid_creators as pc on (pc.username = rcui.username)
 where (rcpo.email is null or rcpo.email = "")
   and rcui.user_suspended_time is null
+  and datediff(now(), rcui.user_lastlogin) < 180
   and pc.username is null;
 -- Set owner to creator
 insert into rcpo_test (pid, username, email, firstname, lastname)
@@ -77,6 +78,7 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
       left join paid_creators as pc on (pc.username = rcui.username)
     where (rcpo.email is null or rcpo.email = "")
       and rcui.user_suspended_time is null
+      and datediff(now(), rcui.user_lastlogin) < 180
       and pc.username is null;
 
 
@@ -98,11 +100,12 @@ left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
     and rcui.user_suspended_time is null
+    and datediff(now(), rcui.user_lastlogin) < 180
     and pc.username is null
   and rcps.last_user is not null
   and (rcur.design = 1 or rcur.user_rights = 1 or rcuro.design = 1 or rcuro.user_rights = 1);
 
--- set owner to last unsuspended user with some perms
+-- set owner to last unsuspended user with some perms who logged-in during the last 180 days
 insert into rcpo_test (pid, username, email, firstname, lastname)
     select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
     from redcap_projects as rcp
@@ -114,6 +117,7 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
     left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
     where (rcpo.email is null or rcpo.email = "")
         and rcui.user_suspended_time is null
+        and datediff(now(), rcui.user_lastlogin) < 180
         and pc.username is null
         and rcps.last_user is not null
         and (rcur.design = 1 or rcur.user_rights = 1 or rcuro.design = 1 or rcuro.user_rights = 1);
@@ -131,6 +135,7 @@ left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
     and rcui.user_suspended_time is null
+    and datediff(now(), rcui.user_lastlogin) < 180
     and pc.username is null
 order by rcp.project_id;
 
@@ -145,6 +150,7 @@ left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
     and rcui.user_suspended_time is null
+    and datediff(now(), rcui.user_lastlogin) < 180
     and pc.username is null
 group by rcp.project_id
 order by qty desc;
@@ -161,6 +167,7 @@ left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
     and rcui.user_suspended_time is null
+    and datediff(now(), rcui.user_lastlogin) < 180
     and pc.username is null
 group by rcp.project_id
 having qty = 1
