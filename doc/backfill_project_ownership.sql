@@ -206,10 +206,62 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
     group by rcp.project_id) as input_columns;
 
 
--- Last_user is designer and authz manager but suspended: If owner is null and last_user is not in paid_creators, and last_user has design and user_rights permissions on project, then set owner to last_user
--- Last_user is designer or authz manager but suspended: If owner is null and last_user is not in paid_creators, and last_user has design or user_rights permissions on project, then set owner to last_user
+-- Last_user is suspended: If owner is null and last_user is not in paid_creators, and last_user is suspended, then set owner to last_user
+-- Last_user has some perms:
+--   If owner is null and last_user is suspended and last_user is not in paid_creators, and last_user has some permissions on project, then set owner to last_user
+-- enumerate relevant permissions of the last unsuspended user by project
+select rcp.project_id, rcps.last_user, rcur.design, rcur.user_rights, rcuro.design, rcuro.user_rights, rcui.user_suspended_time
+from redcap_projects as rcp
+inner join redcap_project_stats as rcps on (rcp.project_id = rcps.project_id)
+inner join redcap_user_information as rcui on (rcps.last_user = rcui.username)
+left join redcap_user_rights as rcur on (rcp.project_id = rcur.project_id and rcps.last_user = rcur.username)
+left join redcap_user_roles as rcuro on (rcp.project_id = rcuro.project_id and rcur.role_id = rcuro.role_id)
+left join paid_creators as pc on (pc.username = rcui.username)
+left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
+where (rcpo.email is null or rcpo.email = "")
+    and pc.username is null
+  and rcps.last_user is not null;
+
+-- set owner to last user with some perms
+insert into rcpo_test (pid, username, email, firstname, lastname)
+    select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
+    from redcap_projects as rcp
+    inner join redcap_project_stats as rcps on (rcp.project_id = rcps.project_id)
+    inner join redcap_user_information as rcui on (rcps.last_user = rcui.username)
+    left join redcap_user_rights as rcur on (rcp.project_id = rcur.project_id and rcps.last_user = rcur.username)
+    left join redcap_user_roles as rcuro on (rcp.project_id = rcuro.project_id and rcur.role_id = rcuro.role_id)
+    left join paid_creators as pc on (pc.username = rcui.username)
+    left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
+    where (rcpo.email is null or rcpo.email = "")
+        and pc.username is null
+        and rcps.last_user is not null;
+
+
+-- set owner to the most recently logged non-suspended, authorized user
 -- Creator, but suspended: If owner is null and creator is not in paid_creators, then set owner to creator
 -- Paid Creator: If owner is null and creator is not suspended and creator is in paid_creators, then set owner to creator
+
+
+-- Fix collation in rcpo_test
+alter table rcpo_test
+CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+
+
+-- set username where it is blank and the email address matches that of a REDCap user
+-- enumerate rows with issues and solutions
+select rcpo.pid, rcpo.username, rcpo.email, rcui.username
+from rcpo_test as rcpo
+left join redcap_user_information as rcui on (rcpo.email = rcui.user_email)
+where (rcpo.username is null or rcpo.username = '')
+and rcui.username is not null;
+
+-- set usernames where possible
+select rcpo.pid, rcui.username
+from rcpo_test as rcpo
+left join redcap_user_information as rcui on (rcpo.email = rcui.user_email)
+where (rcpo.username is null or rcpo.username = '')
+and rcui.username is not null;
+
 
 select * FROM RCPO_TEST;
 
