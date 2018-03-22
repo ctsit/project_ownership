@@ -82,27 +82,34 @@ $(document).ready(function() {
 
     // Overriding submit callbacks for each case: create and edit project
     // settings.
-    if (projectOwnership.projectId) {
-        var saveCallback = function() {
-            $('#editprojectform').submit();
-        };
+    switch (projectOwnership.context) {
+        case 'copy':
+        case 'create':
+            var saveCallback = function() {
+                showProgress(1);
+                document.createdb.submit();
+            };
 
-        $('#edit_project').on('dialogopen', function() {
-            var buttons = $(this).dialog('option', 'buttons');
+            // Overriding submit button's click callback.
+            var $submit = $('form table tr').last().find('td button').first();
+            $submit[0].onclick = projectOwnershipSubmit;
 
-            // Overriding dialog's save button.
-            buttons.Save = projectOwnershipSubmit;
-            $(this).dialog('option', 'buttons', buttons);
-        });
-    }
-    else {
-        var saveCallback = function() {
-            document.createdb.submit();
-        };
+            break;
 
-        // Overriding submit button's click callback.
-        var $submit = $('form table tr').last().find('td button').first();
-        $submit[0].onclick = projectOwnershipSubmit;
+        case 'edit':
+            var saveCallback = function() {
+                $('#editprojectform').submit();
+            };
+
+            $('#edit_project').on('dialogopen', function() {
+                var buttons = $(this).dialog('option', 'buttons');
+
+                // Overriding dialog's save button.
+                buttons.Save = projectOwnershipSubmit;
+                $(this).dialog('option', 'buttons', buttons);
+            });
+
+            break;
     }
 
     // The new submit callback, that runs extra validation checks for project
@@ -110,6 +117,13 @@ $(document).ready(function() {
     function projectOwnershipSubmit() {
         if (!setFieldsCreateFormChk()) {
             return false;
+        }
+
+        if (projectOwnership.context === 'copy') {
+            if ($('#currenttitle').val() === $('#app_title').val()) {
+                simpleDialog(projectOwnership.copyTitleErrorMsg);
+                return false;
+            }
         }
 
         var userId = $username.val();
