@@ -404,6 +404,10 @@ where rcpo.username is null
 or rcpo.username = ""
 ;
 
+-- Erase redundant contact info in RCPO table
+update rcpo_test as rcpo
+set rcpo.email = NULL, rcpo.firstname = NULL, rcpo.lastname = NULL
+where rcpo.username is not null and rcpo.username != "";
 
 select * FROM RCPO_TEST;
 
