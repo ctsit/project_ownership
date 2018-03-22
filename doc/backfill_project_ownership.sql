@@ -25,12 +25,16 @@ select project_id, project_pi_username from redcap_projects where project_pi_use
 -- List the owners to be set
 select project_id, project_pi_username, project_pi_email, project_pi_firstname, project_pi_lastname
   from redcap_projects as rcp left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
-  where project_pi_email is not null and project_pi_email != "" and (rcpo.email is null or rcpo.email = "");
+  where project_pi_email is not null and project_pi_email != ""
+  and (rcpo.email is null or rcpo.email = "")
+  and (rcpo.username is null or rcpo.username = "");
 -- set the owner to the PI
 insert into rcpo_test (pid, username, email, firstname, lastname)
   select project_id, project_pi_username, project_pi_email, project_pi_firstname, project_pi_lastname
   from redcap_projects as rcp left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
-  where project_pi_email is not null and project_pi_email != "" and (rcpo.email is null or rcpo.email = "");
+  where project_pi_email is not null and project_pi_email != ""
+  and (rcpo.email is null or rcpo.email = "")
+  and (rcpo.username is null or rcpo.username = "");
 
 
 -- Build a table of the usernames of peole who were professional, fulltime project creators.alter
@@ -66,6 +70,7 @@ from redcap_projects as rcp
   left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
   left join paid_creators as pc on (pc.username = rcui.username)
 where (rcpo.email is null or rcpo.email = "")
+  and (rcpo.username is null or rcpo.username = "")
   and rcui.user_suspended_time is null
   and datediff(now(), rcui.user_lastlogin) < 180
   and pc.username is null;
@@ -77,6 +82,7 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
       left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
       left join paid_creators as pc on (pc.username = rcui.username)
     where (rcpo.email is null or rcpo.email = "")
+      and (rcpo.username is null or rcpo.username = "")
       and rcui.user_suspended_time is null
       and datediff(now(), rcui.user_lastlogin) < 180
       and pc.username is null;
@@ -99,6 +105,7 @@ left join redcap_user_roles as rcuro on (rcp.project_id = rcuro.project_id and r
 left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
+    and (rcpo.username is null or rcpo.username = "")
     and rcui.user_suspended_time is null
     and datediff(now(), rcui.user_lastlogin) < 180
     and pc.username is null
@@ -116,6 +123,7 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
     left join paid_creators as pc on (pc.username = rcui.username)
     left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
     where (rcpo.email is null or rcpo.email = "")
+        and (rcpo.username is null or rcpo.username = "")
         and rcui.user_suspended_time is null
         and datediff(now(), rcui.user_lastlogin) < 180
         and pc.username is null
@@ -134,6 +142,7 @@ inner join redcap_user_information as rcui on (rcur.username = rcui.username)
 left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
+    and (rcpo.username is null or rcpo.username = "")
     and rcui.user_suspended_time is null
     and datediff(now(), rcui.user_lastlogin) < 180
     and pc.username is null
@@ -149,6 +158,7 @@ inner join redcap_user_information as rcui on (rcur.username = rcui.username)
 left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
+    and (rcpo.username is null or rcpo.username = "")
     and rcui.user_suspended_time is null
     and datediff(now(), rcui.user_lastlogin) < 180
     and pc.username is null
@@ -166,6 +176,7 @@ inner join redcap_user_information as rcui on (rcur.username = rcui.username)
 left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
+    and (rcpo.username is null or rcpo.username = "")
     and rcui.user_suspended_time is null
     and datediff(now(), rcui.user_lastlogin) < 180
     and pc.username is null
@@ -183,6 +194,7 @@ inner join redcap_user_information as rcui on (rcur.username = rcui.username)
 left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
+    and (rcpo.username is null or rcpo.username = "")
     and rcui.user_suspended_time is null
     and datediff(now(), rcui.user_lastlogin) < 180
     and pc.username is null
@@ -200,6 +212,7 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
     left join paid_creators as pc on (pc.username = rcui.username)
     left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
     where (rcpo.email is null or rcpo.email = "")
+        and (rcpo.username is null or rcpo.username = "")
         and rcui.user_suspended_time is null
         and datediff(now(), rcui.user_lastlogin) < 180
         and pc.username is null
@@ -219,7 +232,8 @@ left join redcap_user_roles as rcuro on (rcp.project_id = rcuro.project_id and r
 left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
-    and pc.username is null
+  and (rcpo.username is null or rcpo.username = "")
+  and pc.username is null
   and rcps.last_user is not null;
 
 -- set owner to last user with some perms
@@ -233,6 +247,7 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
     left join paid_creators as pc on (pc.username = rcui.username)
     left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
     where (rcpo.email is null or rcpo.email = "")
+        and (rcpo.username is null or rcpo.username = "")
         and pc.username is null
         and rcps.last_user is not null;
 
@@ -248,6 +263,7 @@ inner join redcap_user_information as rcui on (rcur.username = rcui.username)
 left join paid_creators as pc on (pc.username = rcui.username)
 left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
 where (rcpo.email is null or rcpo.email = "")
+    and (rcpo.username is null or rcpo.username = "")
     and pc.username is null
 group by rcp.project_id;
 
@@ -263,6 +279,7 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
     left join paid_creators as pc on (pc.username = rcui.username)
     left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
     where (rcpo.email is null or rcpo.email = "")
+        and (rcpo.username is null or rcpo.username = "")
         and pc.username is null
     group by rcp.project_id) as input_columns;
 
@@ -275,6 +292,7 @@ from redcap_projects as rcp
   left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
   left join paid_creators as pc on (pc.username = rcui.username)
 where (rcpo.email is null or rcpo.email = "")
+  and (rcpo.username is null or rcpo.username = "")
   and pc.username is null;
 -- Set owner to creator
 insert into rcpo_test (pid, username, email, firstname, lastname)
@@ -284,6 +302,7 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
       left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
       left join paid_creators as pc on (pc.username = rcui.username)
     where (rcpo.email is null or rcpo.email = "")
+      and (rcpo.username is null or rcpo.username = "")
       and pc.username is null;
 
 
@@ -294,7 +313,8 @@ from redcap_projects as rcp
   inner join redcap_user_information as rcui on (rcp.created_by = rcui.ui_id)
   left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
   left join paid_creators as pc on (pc.username = rcui.username)
-where (rcpo.email is null or rcpo.email = "");
+where (rcpo.email is null or rcpo.email = "")
+  and (rcpo.username is null or rcpo.username = "");
 
 -- group by purpose
 select rcp.purpose, count(*) as qty
@@ -303,6 +323,7 @@ from redcap_projects as rcp
   left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
   left join paid_creators as pc on (pc.username = rcui.username)
 where (rcpo.email is null or rcpo.email = "")
+  and (rcpo.username is null or rcpo.username = "")
 group by rcp.purpose
 order by qty desc;
 
@@ -313,7 +334,8 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
       inner join redcap_user_information as rcui on (rcp.created_by = rcui.ui_id)
       left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
       left join paid_creators as pc on (pc.username = rcui.username)
-    where (rcpo.email is null or rcpo.email = "");
+    where (rcpo.email is null or rcpo.email = "")
+      and (rcpo.username is null or rcpo.username = "");
 
 -- Replace old creator with modern owner
 update rcpo_test set
@@ -372,8 +394,7 @@ select rcpo.pid, rcui.username
 from rcpo_test as rcpo
 left join redcap_user_information as rcui on (rcpo.email = rcui.user_email)
 where (rcpo.username is null or rcpo.username = '')
-and rcui.username is not null
-and rcui.user_email != 'dcarden@ufl.edu';
+and rcui.username is not null;
 
 -- update the RCPO table
 update rcpo_test as rcpo
