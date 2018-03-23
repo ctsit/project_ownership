@@ -81,7 +81,7 @@ class ExternalModule extends AbstractExternalModule {
                 firstname VARCHAR(128),
                 lastname VARCHAR(128),
                 PRIMARY KEY (pid)
-            )';
+            ) collate utf8_unicode_ci';
 
         $this->query($sql);
     }
