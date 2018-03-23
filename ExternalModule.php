@@ -19,8 +19,12 @@ class ExternalModule extends AbstractExternalModule {
      * @inheritdoc
      */
     function redcap_every_page_before_render($project_id) {
-        // Saving onwership when project create or edit form is submitted.
-        if (in_array(PAGE, array('ProjectGeneral/edit_project_settings.php', 'ProjectGeneral/create_project.php')) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+            return;
+        }
+
+        if (PAGE == 'ProjectGeneral/create_project.php' || (PAGE == 'ProjectGeneral/edit_project_settings.php' && empty($_GET['action']))) {
+            // Saving onwership when project create or edit form is submitted.
             $this->saveProjectOwnership($project_id);
         }
     }
@@ -29,6 +33,17 @@ class ExternalModule extends AbstractExternalModule {
      * @inheritdoc
      */
     function redcap_every_page_top($project_id) {
+        if (strpos(PAGE, 'ExternalModules/manager/control_center.php') !== false) {
+            // Making sure the module is enabled for all projects.
+            // TODO: move it to redcap_module_system_enable as soon as this hook
+            // is released on REDCap.
+            $this->setSystemSetting(ExternalModules::KEY_ENABLED, true);
+            $this->includeJs('js/config.js');
+            $this->setJsSettings(array('modulePrefix' => $this->PREFIX));
+
+            return;
+        }
+
         if (PAGE == 'ProjectSetup/index.php') {
             // Edit project form.
             $context = 'edit';
@@ -66,7 +81,7 @@ class ExternalModule extends AbstractExternalModule {
                 firstname VARCHAR(128),
                 lastname VARCHAR(128),
                 PRIMARY KEY (pid)
-            )';
+            ) collate utf8_unicode_ci';
 
         $this->query($sql);
     }
@@ -80,13 +95,8 @@ class ExternalModule extends AbstractExternalModule {
         // TODO: remove it if and when this error handling becomes configurable.
         return;
 
-        $q = $this->query('SHOW TABLES LIKE "redcap_project_ownership"');
-        if (!db_num_rows($q)) {
-            return;
-        }
-
         // Removes project onwership table.
-        $this->query('DROP table redcap_project_ownership');
+        $this->query('DROP TABLE IF EXISTS redcap_project_ownership');
     }
 
     /**
