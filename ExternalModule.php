@@ -19,8 +19,12 @@ class ExternalModule extends AbstractExternalModule {
      * @inheritdoc
      */
     function redcap_every_page_before_render($project_id) {
-        // Saving onwership when project create or edit form is submitted.
-        if (in_array(PAGE, array('ProjectGeneral/edit_project_settings.php', 'ProjectGeneral/create_project.php')) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+            return;
+        }
+
+        if (PAGE == 'ProjectGeneral/create_project.php' || (PAGE == 'ProjectGeneral/edit_project_settings.php' && empty($_GET['action']))) {
+            // Saving onwership when project create or edit form is submitted.
             $this->saveProjectOwnership($project_id);
         }
     }
