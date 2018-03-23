@@ -29,10 +29,23 @@ class ExternalModule extends AbstractExternalModule {
      * @inheritdoc
      */
     function redcap_every_page_top($project_id) {
-        // The ownership fieldset is only placed on create and edit project forms.
-        if ((strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0 && !empty($_GET['action']) && $_GET['action'] == 'create') || PAGE == 'ProjectSetup/index.php') {
-            $this->buildOwnershipFieldset($project_id);
+        if (PAGE == 'ProjectSetup/index.php') {
+            // Edit project form.
+            $context = 'edit';
         }
+        elseif (PAGE == 'ProjectGeneral/copy_project_form.php') {
+            // Copy project form.
+            $context = 'copy';
+        }
+        elseif (strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0 && !empty($_GET['action']) && $_GET['action'] == 'create') {
+            // Create project form.
+            $context = 'create';
+        }
+        else {
+            return;
+        }
+
+        $this->buildOwnershipFieldset($context, $project_id);
     }
 
     /**
@@ -79,7 +92,7 @@ class ExternalModule extends AbstractExternalModule {
     /**
      * Builds ownership fieldset.
      */
-    protected function buildOwnershipFieldset($project_id = null) {
+    protected function buildOwnershipFieldset($context, $project_id = null) {
         /**
          * The method call below is a workaround to be used until the following
          * pull request is merged and released.
@@ -153,11 +166,16 @@ class ExternalModule extends AbstractExternalModule {
 
         // Passing fieldset content to JS.
         $settings = array(
-            'projectId' => $project_id,
+            'context' => $context,
             'userId' => USERID,
             'userInfoAjaxPath' => $this->getUrl('plugins/user_info_ajax.php'),
             'fieldsetContents' => RCView::tr(array('id' => 'po-tr', 'valign' => 'top'), $output),
         );
+
+        if ($context == 'copy') {
+            global $lang;
+            $settings['copyTitleErrorMsg'] = $lang['copy_project_11'];
+        }
 
         $this->setJsSettings($settings);
 
