@@ -59,11 +59,6 @@ insert into redcap_project_ownership (pid, username, email, firstname, lastname)
       and pc.username is null;
 
 
--- Fix collation in redcap_project_stats
-alter table redcap_project_stats
-CONVERT TO CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-
-
 -- Last_user is designer or authz manager:
 --   If owner is null and last_user is not suspended and last_user is not in paid_creators, and last_user has design or user_rights permissions on project, then set owner to last_user
 -- set owner to last unsuspended user with some perms who logged-in during the last 180 days
