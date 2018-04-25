@@ -8,7 +8,9 @@ namespace ProjectOwnership\ExternalModule;
 
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
+use Project;
 use RCView;
+use Records;
 
 /**
  * ExternalModule class for Project Ownership module.
@@ -52,15 +54,24 @@ class ExternalModule extends AbstractExternalModule {
             // Copy project form.
             $context = 'copy';
         }
-        elseif (strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0 && !empty($_GET['action']) && $_GET['action'] == 'create') {
-            // Create project form.
-            $context = 'create';
-        }
-        else {
-            return;
+        elseif (strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0) {
+            if (empty($_GET['action'])) {
+                $link = RCView::img(array('src' => APP_PATH_IMAGES . 'key.png'));
+                $link .= ' ' . RCView::b('Projects ownerships list');
+                $link = RCView::a(array('href' => $this->getUrl('plugins/ownership_list.php')), $link);
+
+                $this->setJsSettings(array('listLink' => RCView::div(array('style' => 'margin-top: 25px;'), $link)));
+                $this->includeJs('js/home.js');
+            }
+            elseif ($_GET['action'] == 'create') {
+                // Create project form.
+                $context = 'create';
+            }
         }
 
-        $this->buildOwnershipFieldset($context, $project_id);
+        if (!empty($context)) {
+            $this->buildOwnershipFieldset($context, $project_id);
+        }
     }
 
     /**
@@ -97,6 +108,37 @@ class ExternalModule extends AbstractExternalModule {
 
         // Removes project onwership table.
         $this->query('DROP TABLE IF EXISTS redcap_project_ownership');
+    }
+
+    /**
+     * Gets count of file uploads, saved attributes, and records of a given
+     * project.
+     */
+    function getProjectStats($project_id) {
+        $stats = array();
+
+        $project_id = intval($project_id);
+        $sql = 'SELECT COUNT(e.doc_id) count FROM redcap_edocs_metadata e
+                LEFT JOIN redcap_docs_to_edocs dte ON dte.doc_id = e.doc_id
+                LEFT JOIN redcap_docs d ON d.docs_id = dte.docs_id
+                WHERE e.project_id = "' . $project_id . '" AND d.docs_id IS NULL';
+
+        $count = $this->query($sql);
+        $count = db_fetch_assoc($count);
+        $stats['file_uploads_count'] = $count['count'];
+
+        $count = $this->query('SELECT COUNT(*) count FROM redcap_data WHERE project_id = "' . $project_id . '"');
+        $count = db_fetch_assoc($count);
+        $stats['attr_count'] = $count['count'];
+
+        global $Proj;
+
+        $aux = $Proj;
+        $Proj = new Project($project_id);
+        $stats['records_count'] = Records::getRecordCount();
+        $Proj = $aux;
+
+        return $stats;
     }
 
     /**
@@ -186,6 +228,10 @@ class ExternalModule extends AbstractExternalModule {
             global $lang;
             $settings['copyTitleErrorMsg'] = $lang['copy_project_11'];
         }
+        elseif ($context == 'edit') {
+            global $user_rights;
+            $settings['openProjectEditPopup'] = $user_rights['design'] && !empty($_GET['open_project_edit_popup']);
+        }
 
         $this->setJsSettings($settings);
 
@@ -198,7 +244,7 @@ class ExternalModule extends AbstractExternalModule {
      * Gets project ownership.
      */
     protected function getProjectOwnership($project_id) {
-        $q = $this->query('SELECT * FROM redcap_project_ownership WHERE pid = ' . db_escape($project_id));
+        $q = $this->query('SELECT * FROM redcap_project_ownership WHERE pid = "' . intval($project_id) . '"');
         if (!db_num_rows($q)) {
             return false;
         }
@@ -239,7 +285,7 @@ class ExternalModule extends AbstractExternalModule {
                 $value = 'null';
             }
             elseif (!empty($_POST[$field_name])) {
-                $value = '"' . db_escape($_POST[$field_name]) . '"';
+                $value = '"' . db_real_escape_string($_POST[$field_name]) . '"';
             }
             else {
                 echo 'Missing ' . $suffix . ' field.';
@@ -250,9 +296,10 @@ class ExternalModule extends AbstractExternalModule {
             unset($_POST[$field_name]);
         }
 
+        $project_id = intval($project_id);
         if ($ownership_exists) {
             // Updating an existing entry.
-            $sql = 'UPDATE redcap_project_ownership SET ' . implode(', ', $values) . ' WHERE pid = ' . $project_id;
+            $sql = 'UPDATE redcap_project_ownership SET ' . implode(', ', $values) . ' WHERE pid = "' . $project_id . '"';
         }
         else {
             // Creating a new entry.

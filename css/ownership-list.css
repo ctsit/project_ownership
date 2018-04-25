@@ -1,0 +1,7 @@
+#pagecontainer {
+    max-width: 1500px;
+}
+
+#project-ownership-list a {
+    font-weight: bold;
+}
