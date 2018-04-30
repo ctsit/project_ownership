@@ -57,7 +57,7 @@ class ExternalModule extends AbstractExternalModule {
         elseif (strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0) {
             if (empty($_GET['action'])) {
                 $link = RCView::img(array('src' => APP_PATH_IMAGES . 'key.png'));
-                $link .= ' ' . RCView::b('Projects ownerships list');
+                $link .= ' ' . RCView::b('Project ownership list');
                 $link = RCView::a(array('href' => $this->getUrl('plugins/ownership_list.php')), $link);
 
                 $this->setJsSettings(array('listLink' => RCView::div(array('style' => 'margin-top: 25px;'), $link)));

@@ -28,14 +28,14 @@ The same fieldset from project creation page may be seen at project settings mod
 
 ![Project settings page](img/edit_project.png)
 
-## Projects ownerships list
-A global list of projects ownerships accessible at the home page.
+## Projects ownership list
+A global list of projects ownership is accessible at the home page.
 
-![Ownerships list link](img/ownerships_list_link.png)
+![Ownership list link](img/ownership_list_link.png)
 
-On this list, you have a wide view to the ownerships of projects you have access. From each row you may access links to update ownership information.
+On this list, you have a view to the ownership of projects you have access. From each row you may access links to update ownership information or access the project home page.
 
-![Ownerships list link](img/ownerships_list.png)
+![Ownership list](img/ownership_list.png)
 
 ## Backfilling project ownership
 

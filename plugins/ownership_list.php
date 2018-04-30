@@ -13,7 +13,7 @@ $objHtmlPage->PrintHeader();
 
 // Displaying page tabs and title.
 require_once APP_PATH_VIEWS . 'HomeTabs.php';
-echo RCView::div(array('class' => 'projhdr'), RCView::img(array('src' => APP_PATH_IMAGES . 'key.png')) . ' Projects Ownerships');
+echo RCView::div(array('class' => 'projhdr'), RCView::img(array('src' => APP_PATH_IMAGES . 'key.png')) . ' Projects Ownership');
 
 $curr_page = empty($_GET['pager']) || $_GET['pager'] != intval($_GET['pager']) ? 1 : $_GET['pager'];
 $count_sql = 'SELECT COUNT(o.pid) as total_rows FROM redcap_project_ownership o
@@ -54,7 +54,7 @@ $sql = 'SELECT
 $q = $module->query($sql);
 
 if (!db_num_rows($q)) {
-    echo RCView::p(array(), 'There are no projects ownerships to show.');
+    echo RCView::p(array(), 'There are no projects to show.');
     $objHtmlPage->PrintFooter();
     exit;
 }
@@ -267,7 +267,7 @@ if ($total_rows > PROJECT_OWNERSHIP_LIST_MAX_SIZE) {
 </div>
 
 <?php if (!empty($pager)): ?>
-    <nav aria-label="Projects Ownerships List Navigation">
+    <nav aria-label="Project Ownership List Navigation">
         <ul class="pagination">
             <?php foreach ($pager as $page): ?>
                 <li class="page-item<?php echo $page['class'] ? ' ' . $page['class'] : ''; ?>">
