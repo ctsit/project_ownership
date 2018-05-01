@@ -54,18 +54,18 @@ class ExternalModule extends AbstractExternalModule {
             // Copy project form.
             $context = 'copy';
         }
-        elseif (strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0) {
-            if (empty($_GET['action'])) {
-                $link = RCView::img(array('src' => APP_PATH_IMAGES . 'key.png'));
-                $link .= ' ' . RCView::b('Project ownership list');
-                $link = RCView::a(array('href' => $this->getUrl('plugins/ownership_list.php')), $link);
-
-                $this->setJsSettings(array('listLink' => RCView::div(array('style' => 'margin-top: 25px;'), $link)));
-                $this->includeJs('js/home.js');
-            }
-            elseif ($_GET['action'] == 'create') {
+        elseif (strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0 && !empty($_GET['action'])) {
+            if ($_GET['action'] == 'create') {
                 // Create project form.
                 $context = 'create';
+            }
+            elseif ($_GET['action'] == 'myprojects') {
+                $helper = RCView::a(array('href' => $this->getUrl('plugins/ownership_list.php')), 'Project Ownership List');
+                $helper = 'To review and edit ownership of the projects you have access to, visit the ' . $helper . '.';
+
+                $this->setJsSettings(array('ownershipListHelper' => RCView::div(array('class' => 'ownership-list-helper col-sm-12'), $helper)));
+                $this->includeJs('js/my-projects.js');
+                $this->includeCss('css/my-projects.css');
             }
         }
 
@@ -316,7 +316,7 @@ class ExternalModule extends AbstractExternalModule {
      * @param string $path
      *   The relative path to the css file.
      */
-    protected function includeCss($path) {
+    function includeCss($path) {
         echo '<link rel="stylesheet" href="' . $this->getUrl($path) . '">';
     }
 
@@ -326,7 +326,7 @@ class ExternalModule extends AbstractExternalModule {
      * @param string $path
      *   The relative path to the js file.
      */
-    protected function includeJs($path) {
+    function includeJs($path) {
         echo '<script src="' . $this->getUrl($path) . '"></script>';
     }
 
