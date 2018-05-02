@@ -37,6 +37,8 @@ On this list, you have a view to the ownership of projects you have access. From
 
 ![Ownership list](img/ownership_list.png)
 
+The Project Ownership List is accessible via the custom action, _project\_ownership_. E.g., the ownership list can be referenced like this example: [https://redcap.example.org/index.php?action=project_ownership](https://redcap.example.org/index.php?action=project_ownership) This is useful if you need a static link to the Project Ownership List. The action has the added benefit of being a _shorter_ URL.
+
 ## Backfilling project ownership
 
 This module forces the collection of project ownership information, but it cannot address a long history of missing ownership info.  If some guess as to the ownership is needed, that can be addressed with heuristics that guess at ownership info from the REDCap database.  University of Florida's CTS-IT did this for UF's primary REDCap environment.  The product of that work is available in the form of two SQL files [backfill_project_ownership_test.sql](doc/backfill_project_ownership_test.sql) and [backfill_project_ownership.sql](doc/backfill_project_ownership.sql) These files gleen ownership data from the REDCap database using 16 queries of PI, creator, user-authorization, user activity and login data. They produce a reasonable guess of who is likely to care about the data in a project and be available to speak with authority about that data. These files are somewhat specific to UF and would need to be adapted to local requirements before use at other institutions. Specifically, the records in the paid_creators table and some individual project records would have no meaning outside of UF.

@@ -2,6 +2,13 @@
 All notable changes to the Project Ownership module will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.2] - 2018-05-02
+### Changed
+- Add documentation of the custom 'project_ownership' action (Philip Chase)
+- Link to 'Project Ownership List' via the action on the 'My Projects' page (Philip Chase)
+- Creating a static path for projects ownership page. (Tiago Bember Simeao)
+
+
 ## [1.1.1] - 2018-05-02
 ### Changed
 - Finish rebranding with a change to the README (Philip Chase)
