@@ -67,6 +67,9 @@ class ExternalModule extends AbstractExternalModule {
                 $this->includeJs('js/my-projects.js');
                 $this->includeCss('css/my-projects.css');
             }
+            elseif ($_GET['action'] == 'project_ownership') {
+                redirect($this->getUrl('plugins/ownership_list.php'));
+            }
         }
 
         if (!empty($context)) {
