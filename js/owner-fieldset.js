@@ -109,6 +109,10 @@ $(document).ready(function() {
                 $(this).dialog('option', 'buttons', buttons);
             });
 
+            if (projectOwnership.openProjectEditPopup) {
+                displayEditProjPopup();
+            }
+
             break;
     }
 
