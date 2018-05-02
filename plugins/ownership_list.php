@@ -15,6 +15,10 @@ $objHtmlPage->PrintHeader();
 require_once APP_PATH_VIEWS . 'HomeTabs.php';
 echo RCView::div(array('class' => 'projhdr'), RCView::img(array('src' => APP_PATH_IMAGES . 'key.png')) . ' Projects Ownership');
 
+// Adding custom styles and scripts.
+$module->includeCss('css/ownership-list.css');
+$module->includeJs('js/ownership-list.js');
+
 $curr_page = empty($_GET['pager']) || $_GET['pager'] != intval($_GET['pager']) ? 1 : $_GET['pager'];
 $count_sql = 'SELECT COUNT(o.pid) as total_rows FROM redcap_project_ownership o
               INNER JOIN redcap_projects p ON p.project_id = o.pid';
@@ -246,7 +250,6 @@ if ($total_rows > PROJECT_OWNERSHIP_LIST_MAX_SIZE) {
 }
 ?>
 
-<link rel="stylesheet" href="<?php echo $module->getUrl('css/ownership-list.css'); ?>">
 <div id="project-ownership-list" class="table-responsive">
     <table class="table table-striped">
         <thead>

@@ -29,7 +29,7 @@ The same fieldset from project creation page may be seen at project settings mod
 ![Project settings page](img/edit_project.png)
 
 ## Projects ownership list
-A global list of projects ownership is accessible at the home page.
+A global list of projects ownership is accessible at __My Projects__ page.
 
 ![Ownership list link](img/ownership_list_link.png)
 

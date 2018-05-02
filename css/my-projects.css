@@ -1,0 +1,9 @@
+.ownership-list-helper {
+    padding: 0;
+    margin-bottom: 15px;
+}
+
+.ownership-list-helper a {
+    text-decoration: underline;
+    color: #800000;
+}
