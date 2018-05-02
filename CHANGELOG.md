@@ -2,8 +2,12 @@
 All notable changes to the Project Ownership module will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.1] - 2018-05-02
+### Changed
+- Finish rebranding with a change to the README (Philip Chase)
 
-## [1.1.0] - 2018-05-01
+
+## [1.1.0] - 2018-05-02
 ### Added
 - Adding ownership list plugin to provide a summer view of project ownership to users. (Tiago Bember Simeao)
 - Add scripts and instructions for backfilling project ownership (Philip Chase)
