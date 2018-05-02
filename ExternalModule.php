@@ -60,7 +60,7 @@ class ExternalModule extends AbstractExternalModule {
                 $context = 'create';
             }
             elseif ($_GET['action'] == 'myprojects') {
-                $helper = RCView::a(array('href' => $this->getUrl('plugins/ownership_list.php')), 'Project Ownership List');
+                $helper = RCView::a(array('href' => APP_PATH_WEBROOT_FULL . 'index.php?action=project_ownership'), 'Project Ownership List');
                 $helper = 'To review and edit ownership of the projects you have access to, visit the ' . $helper . '.';
 
                 $this->setJsSettings(array('ownershipListHelper' => RCView::div(array('class' => 'ownership-list-helper col-sm-12'), $helper)));
