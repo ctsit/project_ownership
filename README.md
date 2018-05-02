@@ -1,5 +1,5 @@
 # REDCap Project Ownership
-A REDCap module to enforce the collection of ownership details at project creation.
+A REDCap module to aid in the collection and management of project ownership details.
 
 ## Prerequisites
 - REDCap >= 8.0.3
