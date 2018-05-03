@@ -21,6 +21,11 @@ class ExternalModule extends AbstractExternalModule {
      * @inheritdoc
      */
     function redcap_every_page_before_render($project_id) {
+        if (strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0 && !empty($_GET['action']) && $_GET['action'] == 'project_ownership') {
+            $this->redirect($this->getUrl('plugins/ownership_list.php'));
+            return;
+        }
+
         if ($_SERVER['REQUEST_METHOD'] != 'POST') {
             return;
         }
@@ -60,15 +65,12 @@ class ExternalModule extends AbstractExternalModule {
                 $context = 'create';
             }
             elseif ($_GET['action'] == 'myprojects') {
-                $helper = RCView::a(array('href' => APP_PATH_WEBROOT_FULL . 'index.php?action=project_ownership'), 'Project Ownership List');
+                $helper = RCView::a(array('href' => APP_PATH_WEBROOT_PARENT . 'index.php?action=project_ownership'), 'Project Ownership List');
                 $helper = 'To review and edit ownership of the projects you have access to, visit the ' . $helper . '.';
 
                 $this->setJsSettings(array('ownershipListHelper' => RCView::div(array('class' => 'ownership-list-helper col-sm-12'), $helper)));
                 $this->includeJs('js/my-projects.js');
                 $this->includeCss('css/my-projects.css');
-            }
-            elseif ($_GET['action'] == 'project_ownership') {
-                redirect($this->getUrl('plugins/ownership_list.php'));
             }
         }
 
@@ -331,6 +333,26 @@ class ExternalModule extends AbstractExternalModule {
      */
     function includeJs($path) {
         echo '<script src="' . $this->getUrl($path) . '"></script>';
+    }
+
+    /**
+     * Redirects user to the given URL.
+     *
+     * This function basically replicates redirect() function, but since EM
+     * throws an error when an exit() is called, we need to adapt it to the
+     * EM way of exiting.
+     */
+    protected function redirect($url) {
+        if (headers_sent()) {
+            // If contents already output, use javascript to redirect instead.
+            echo '<script>window.location.href="' . $url . '";</script>';
+        }
+        else {
+            // Redirect using PHP.
+            header('Location: ' . $url);
+        }
+
+        $this->exitAfterHook();
     }
 
     /**
