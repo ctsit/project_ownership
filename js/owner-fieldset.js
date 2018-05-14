@@ -1,7 +1,7 @@
 $(document).ready(function() {
-    // Place ownership fieldset at project create/edit page, right after
+    // Place ownership fieldset at project create/edit page, right before
     // "Purpose" field.
-    $('#row_purpose').after(projectOwnership.fieldsetContents);
+    $('#row_purpose').before(projectOwnership.fieldsetContents);
 
     // Setting up autocomplete for username field.
     var $username = $('[name="project_ownership_username"]');
