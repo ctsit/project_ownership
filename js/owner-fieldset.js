@@ -69,6 +69,14 @@ $(document).ready(function() {
         });
     });
 
+    //autocomplete pi info if set as a research project after ownership is set
+    $('#purpose').change(function() {
+      if ($('#purpose').val() == '2') {
+        $username.change();
+      }
+    });
+
+
     // Handling ownership auto assign link.
     $('.po-auto-assign').click(function(event) {
         $username.val(projectOwnership.userId);
