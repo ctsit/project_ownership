@@ -41,6 +41,11 @@ $(document).ready(function() {
                 if (result.success) {
                     $.each(result.data, function(key, value) {
                         $('[name="project_ownership_' + key + '"').val(value);
+
+                        //fill in PI info if a research project
+                        if ($('#purpose').val() == '2') {
+                          $('[name="project_pi_' + key + '"').val(value);
+                        }
                     });
                 }
             }, 'json');
