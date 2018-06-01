@@ -3,7 +3,7 @@ All notable changes to the Project Ownership module will be documented in this f
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
-## [1.2.0] - TBD
+## [1.2.0] - 2018-06-01
 ### Changed
 - Autocomplete pi info if project purpose is set to research and a REDCap username has been set (Dileep)
 - Autofill pi fields whenever ownership fields are autofilled (Dileep)
