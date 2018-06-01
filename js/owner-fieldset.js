@@ -1,7 +1,7 @@
 $(document).ready(function() {
-    // Place ownership fieldset at project create/edit page, right after
+    // Place ownership fieldset at project create/edit page, right before
     // "Purpose" field.
-    $('#row_purpose').after(projectOwnership.fieldsetContents);
+    $('#row_purpose').before(projectOwnership.fieldsetContents);
 
     // Setting up autocomplete for username field.
     var $username = $('[name="project_ownership_username"]');
@@ -41,6 +41,11 @@ $(document).ready(function() {
                 if (result.success) {
                     $.each(result.data, function(key, value) {
                         $('[name="project_ownership_' + key + '"').val(value);
+
+                        //fill in PI info if a research project
+                        if ($('#purpose').val() == '2') {
+                          $('[name="project_pi_' + key + '"').val(value);
+                        }
                     });
                 }
             }, 'json');
@@ -63,6 +68,14 @@ $(document).ready(function() {
             }
         });
     });
+
+    //autocomplete pi info if set as a research project after ownership is set
+    $('#purpose').change(function() {
+      if ($('#purpose').val() == '2') {
+        $username.change();
+      }
+    });
+
 
     // Handling ownership auto assign link.
     $('.po-auto-assign').click(function(event) {
