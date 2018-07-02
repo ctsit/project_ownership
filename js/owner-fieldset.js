@@ -3,6 +3,11 @@ $(document).ready(function() {
     // "Purpose" field.
     $('#row_purpose').before(projectOwnership.fieldsetContents);
 
+    // Track when project_ownership_fields are done initializing.
+    // This is done so that pi fields for research project are not overwritten
+    // when the username is updated.
+    var username_initialized = false;
+
     // Setting up autocomplete for username field.
     var $username = $('[name="project_ownership_username"]');
 
@@ -42,11 +47,16 @@ $(document).ready(function() {
                     $.each(result.data, function(key, value) {
                         $('[name="project_ownership_' + key + '"').val(value);
 
-                        //fill in PI info if a research project
-                        if ($('#purpose').val() == '2') {
-                          $('[name="project_pi_' + key + '"').val(value);
+                        // fill in PI info if a research project.
+                        // can only be done here since the ownership fields will be
+                        // empty if try to fill them before this GET request completes
+                        var pi_identifier = '[name="project_pi_' + key + '"]';
+                        if ($('#purpose').val() == '2' && $(pi_identifier).val() == "" && username_initialized) {
+                          $(pi_identifier).val(value);
                         }
                     });
+
+                    username_initialized = true;
                 }
             }, 'json');
         }
