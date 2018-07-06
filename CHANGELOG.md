@@ -2,12 +2,16 @@
 All notable changes to the Project Ownership module will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.1] - 2018-06-06
+### Changed
+- Update documentation to reflect changes made to the project_ownership interface. (Dileep Rajput)
+- Add documentation that describes PI information autocomplete feature. (Dileep Rajput)
 
 ## [1.2.0] - 2018-06-01
 ### Changed
-- Autocomplete pi info if project purpose is set to research and a REDCap username has been set (Dileep)
-- Autofill pi fields whenever ownership fields are autofilled (Dileep)
-- Move project ownership fields to before the project purpose field (Dileep)
+- Autocomplete pi info if project purpose is set to research and a REDCap username has been set (Dileep Rajput)
+- Autofill pi fields whenever ownership fields are autofilled (Dileep Rajput)
+- Move project ownership fields to before the project purpose field (Dileep Rajput)
 
 
 ## [1.1.3] - 2018-05-03
