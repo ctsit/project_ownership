@@ -8,6 +8,11 @@ $(document).ready(function() {
     // when the username is updated.
     var username_initialized = false;
 
+    //initalization behaves differently on project create page
+    if (/redcap\/index\.php\?action=create$/.test(window.location.href)) {
+        username_initialized = true;
+    }
+
     // Setting up autocomplete for username field.
     var $username = $('[name="project_ownership_username"]');
 
