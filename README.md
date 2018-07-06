@@ -21,7 +21,12 @@ Users may click on "I am the owner" link to auto-assign the ownership.
 ### Autocomplete from PI information
 If the purpose of the project is "Research", the ownership fields are auto completed as the PI information is filled out.
 
-![Autocomplete from PI information](img/pi_autocomplete.gif)
+![Autocomplete from PI information](img/pi_to_ownership_autofill.gif)
+
+### Autocomplete PI information
+The PI information can also be automatically filled in when the "I am the owner" link to auto-assign the ownership is clicked.
+
+![Autocomplete PI information](img/ownership_to_pi_autofill.gif)
 
 ## Checking and updating project ownership
 The same fieldset from project creation page may be seen at project settings modal - where users are able to check and update ownership information.
