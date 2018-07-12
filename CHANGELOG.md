@@ -2,10 +2,12 @@
 All notable changes to the Project Ownership module will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.2.1] - 2018-06-06
+## [1.2.1] - 2018-07-12
 ### Changed
-- Update documentation to reflect changes made to the project_ownership interface. (Dileep Rajput)
 - Add documentation that describes PI information autocomplete feature. (Dileep Rajput)
+- Resolve edge case of auto_assign link failing to fill PI info the first time it is pressed on the project creation page (Dileep)
+- Modify owner-fieldset.js to not overwrite old pi information (Dileep)
+
 
 ## [1.2.0] - 2018-06-01
 ### Changed
