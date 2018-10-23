@@ -20,7 +20,7 @@ class ExternalModule extends AbstractExternalModule {
     /**
      * @inheritdoc
      */
-    function redcap_every_page_before_render($project_id) {
+    function redcap_every_page_before_render($project_id=null) {
         if (strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0 && !empty($_GET['action']) && $_GET['action'] == 'project_ownership') {
             $this->redirect($this->getUrl('plugins/ownership_list.php'));
             return;
