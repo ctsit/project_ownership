@@ -10,6 +10,8 @@ use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
 use Project;
 use RCView;
+use REDCapEntity\EntityDB;
+use REDCapEntity\EntityFactory;
 use Records;
 
 /**
@@ -20,7 +22,14 @@ class ExternalModule extends AbstractExternalModule {
     /**
      * @inheritdoc
      */
-    function redcap_every_page_before_render($project_id=null) {
+    function redcap_every_page_before_render($project_id) {
+        if (!defined('REDCAP_ENTITY_PREFIX')) {
+            $this->delayModuleExecution();
+
+            // Exits gracefully when REDCap Entity is not available.
+            return;
+        }
+
         if (strpos(PAGE, substr(APP_PATH_WEBROOT_PARENT, 1) . 'index.php') === 0 && !empty($_GET['action']) && $_GET['action'] == 'project_ownership') {
             $this->redirect($this->getUrl('plugins/ownership_list.php'));
             return;
@@ -36,15 +45,57 @@ class ExternalModule extends AbstractExternalModule {
         }
     }
 
+    function redcap_entity_types() {
+        $types = [];
+
+        $types['project_ownership'] = [
+            'label' => 'Project Ownership',
+            'label_plural' => 'Projects Ownership',
+            'icon' => 'key',
+            'class' => [
+                'name' => 'ProjectOwnership\Entity\ProjectOwnership',
+                'path' => 'classes/entity/ProjectOwnership.php',
+            ],
+            'properties' => [
+                'pid' => [
+                    'name' => 'Project',
+                    'type' => 'project',
+                    'required' => true,
+                ],
+                'username' => [
+                    'name' => 'Owner user account',
+                    'type' => 'user',
+                ],
+                'email' => [
+                    'name' => 'Owner email',
+                    'type' => 'email',
+                ],
+                'firstname' => [
+                    'name' => 'Owner first name',
+                    'type' => 'text',
+                ],
+                'lastname' => [
+                    'name' => 'Owner last name',
+                    'type' => 'text',
+                ],
+            ],
+        ];
+
+        return $types;
+    }
+
     /**
      * @inheritdoc
      */
     function redcap_every_page_top($project_id) {
+        if (!defined('REDCAP_ENTITY_PREFIX')) {
+            $this->delayModuleExecution();
+
+            // Exits gracefully when REDCap Entity is not enabled.
+            return;
+        }
+
         if (strpos(PAGE, 'ExternalModules/manager/control_center.php') !== false) {
-            // Making sure the module is enabled for all projects.
-            // TODO: move it to redcap_module_system_enable as soon as this hook
-            // is released on REDCap.
-            $this->setSystemSetting(ExternalModules::KEY_ENABLED, true);
             $this->includeJs('js/config.js');
             $this->setJsSettings(array('modulePrefix' => $this->PREFIX));
 
@@ -83,23 +134,11 @@ class ExternalModule extends AbstractExternalModule {
      * @inheritdoc
      */
     function redcap_module_system_enable($version) {
-        $q = $this->query('SHOW TABLES LIKE "redcap_project_ownership"');
-        if (db_num_rows($q)) {
-            return;
-        }
+        // Making sure the module is enabled on all projects.
+        $this->setSystemSetting(ExternalModules::KEY_ENABLED, true);
 
-        // Creates project ownership table.
-        $sql = '
-            CREATE TABLE redcap_project_ownership (
-                pid INT NOT NULL,
-                username VARCHAR(128),
-                email VARCHAR(128),
-                firstname VARCHAR(128),
-                lastname VARCHAR(128),
-                PRIMARY KEY (pid)
-            ) collate utf8_unicode_ci';
-
-        $this->query($sql);
+        // Building project ownership entity.
+        EntityDB::buildSchema($this);
     }
 
     /**
@@ -111,8 +150,8 @@ class ExternalModule extends AbstractExternalModule {
         // TODO: remove it if and when this error handling becomes configurable.
         return;
 
-        // Removes project onwership table.
-        $this->query('DROP TABLE IF EXISTS redcap_project_ownership');
+        // Removes project onwership entity.
+        EntityDB::dropSchema($this);
     }
 
     /**
@@ -150,16 +189,6 @@ class ExternalModule extends AbstractExternalModule {
      * Builds ownership fieldset.
      */
     protected function buildOwnershipFieldset($context, $project_id = null) {
-        /**
-         * The method call below is a workaround to be used until the following
-         * pull request is merged and released.
-         *
-         * https://github.com/vanderbilt/redcap-external-modules/pull/74
-         *
-         * TODO: remove it when it is not needed anymore.
-         */
-        $this->redcap_module_system_enable($this->VERSION);
-
         // Setting up default values.
         $po_data = array(
             'username' => '',
@@ -168,9 +197,9 @@ class ExternalModule extends AbstractExternalModule {
             'email' => '',
         );
 
-        if ($project_id) {
-            // Loading stored values.
-            $po_data = $this->getProjectOwnership($project_id);
+        // Loading stored values.
+        if ($project_id && ($entity = $this->getProjectOwnership($project_id))) {
+            $po_data = $entity->getData();
         }
 
         // Required field marker.
@@ -249,12 +278,13 @@ class ExternalModule extends AbstractExternalModule {
      * Gets project ownership.
      */
     protected function getProjectOwnership($project_id) {
-        $q = $this->query('SELECT * FROM redcap_project_ownership WHERE pid = "' . intval($project_id) . '"');
-        if (!db_num_rows($q)) {
+        $factory = new EntityFactory();
+
+        if (!$results = $factory->query('project_ownership')->condition('pid', $project_id)->execute()) {
             return false;
         }
 
-        return db_fetch_assoc($q);
+        return reset($results);
     }
 
     /**
@@ -280,39 +310,36 @@ class ExternalModule extends AbstractExternalModule {
         // Specifying required fields for each case.
         $suffixes = array('username', 'firstname', 'lastname', 'email');
         $required = empty($_POST['project_ownership_username']) ? array('firstname', 'lastname', 'email') : array('username');
-        $ownership_exists = $this->getProjectOwnership($project_id);
 
-        $values = array();
+        $values = array('pid' => $project_id);
         foreach ($suffixes as $suffix) {
             $field_name = 'project_ownership_' . $suffix;
 
             if (!in_array($suffix, $required)) {
-                $value = 'null';
+                $value = null;
             }
             elseif (!empty($_POST[$field_name])) {
-                $value = '"' . db_real_escape_string($_POST[$field_name]) . '"';
+                $value = $_POST[$field_name];
             }
             else {
                 echo 'Missing ' . $suffix . ' field.';
                 exit;
             }
 
-            $values[$suffix] = $ownership_exists ? $suffix . ' = ' . $value : $value;
+            $values[$suffix] = $value;
             unset($_POST[$field_name]);
         }
 
-        $project_id = intval($project_id);
-        if ($ownership_exists) {
-            // Updating an existing entry.
-            $sql = 'UPDATE redcap_project_ownership SET ' . implode(', ', $values) . ' WHERE pid = "' . $project_id . '"';
-        }
-        else {
-            // Creating a new entry.
-            $values['pid'] = $project_id;
-            $sql = 'INSERT INTO redcap_project_ownership (' . implode(', ', array_keys($values)) . ') VALUES (' . implode(', ', $values) . ')';
+        if (!$entity = $this->getProjectOwnership($project_id)) {
+            $factory = new EntityFactory();
+            $entity = $factory->getInstance('project_ownership');
         }
 
-        $this->query($sql);
+        if ($entity->setData($values)) {
+            echo 'An error has occurred. Please contact administration or try again later.';
+        }
+
+        $entity->save();
     }
 
     /**
