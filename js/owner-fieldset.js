@@ -1,17 +1,22 @@
 $(document).ready(function() {
+    var $purposeRow = $('#row_purpose');
+    if ($purposeRow.length === 0) {
+        return;
+    }
+
     // Place ownership fieldset at project create/edit page, right before
     // "Purpose" field.
-    $('#row_purpose').before(projectOwnership.fieldsetContents);
+    $purposeRow.before(projectOwnership.fieldsetContents);
 
-    // Track when project_ownership_fields are done initializing.
-    // This is done so that pi fields for research project are not overwritten
-    // when the username is updated.
-    var username_initialized = false;
+    // The following variables track whether PI fields or ownership fields have
+    // been manually changed by the end user. It prevents undesirable overrides
+    // by the autocomplete tool.
+    var ownershipFieldsInit = projectOwnership.context !== 'create';
+    var piFieldsInit = false;
 
-    //initalization behaves differently on project create page
-    if (/redcap\/index\.php\?action=create$/.test(window.location.href)) {
-        username_initialized = true;
-    }
+    $('#edit_project').on('dialogopen', function() {
+        piFieldsInit = $('#purpose').val() === '2';
+    });
 
     // Setting up autocomplete for username field.
     var $username = $('[name="project_ownership_username"]');
@@ -48,21 +53,13 @@ $(document).ready(function() {
             // If the given username is valid, fill out first name, last name
             // and email by pulling account information.
             $.get(projectOwnership.userInfoAjaxPath, {username: userId}, function(result) {
-                if (result.success) {
-                    $.each(result.data, function(key, value) {
-                        $('[name="project_ownership_' + key + '"').val(value);
-
-                        // fill in PI info if a research project.
-                        // can only be done here since the ownership fields will be
-                        // empty if try to fill them before this GET request completes
-                        var pi_identifier = '[name="project_pi_' + key + '"]';
-                        if ($('#purpose').val() == '2' && $(pi_identifier).val() == "" && username_initialized) {
-                          $(pi_identifier).val(value);
-                        }
-                    });
-
-                    username_initialized = true;
+                if (!result.success) {
+                    return;
                 }
+
+                $.each(result.data, function(key, value) {
+                    $('[name="project_ownership_' + key + '"').val(value).change();
+                });
             }, 'json');
         }
     }
@@ -74,23 +71,40 @@ $(document).ready(function() {
     $username.on('input', usernameFieldUpdateCallback);
     $username.change(usernameFieldUpdateCallback);
 
-    // Autocompleting first name, last name and email fields as the respective
-    // PI fields are filled out.
-    $.each(['firstname', 'lastname', 'email'], function(i, val) {
-        $('[name="project_pi_' + val + '"]').change(function() {
-            if (!$('[name="project_ownership_username"]').val()) {
-                $('[name="project_ownership_' + val + '"]').val($(this).val());
+    // Autocompleting ownership's first name, last name and email fields as the
+    // respective PI fields are filled out - and vice versa.
+    //
+    // Only untouched field sets can be autocompleted. Thus, the autocomplete
+    // direction depends entirely on which of these field sets (ownership's or
+    // PI's) is filled first.
+    ['firstname', 'lastname', 'email'].forEach(function(key) {
+        $('[name="project_pi_' + key + '"]').change(function() {
+            piFieldsInit = true;
+
+            if (!ownershipFieldsInit) {
+                $('[name="project_ownership_' + key + '"]').val($(this).val());
+            }
+        });
+
+        $('[name="project_ownership_' + key + '"]').change(function() {
+            ownershipFieldsInit = true;
+
+            if ($('#purpose').val() === '2' && !piFieldsInit) {
+                $('[name="project_pi_' + key + '"]').val($(this).val());
             }
         });
     });
 
-    //autocomplete pi info if set as a research project after ownership is set
+    // Autocomplete PI info if set as a research project after ownership is set.
     $('#purpose').change(function() {
-      if ($('#purpose').val() == '2') {
-        $username.change();
-      }
-    });
+        if ($(this).val() !== '2' || !ownershipFieldsInit) {
+            return;
+        }
 
+        ['firstname', 'lastname', 'email'].forEach(function(key) {
+            $('[name="project_ownership_' + key + '"]').change();
+        });
+    });
 
     // Handling ownership auto assign link.
     $('.po-auto-assign').click(function(event) {

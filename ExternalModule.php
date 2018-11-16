@@ -97,7 +97,7 @@ class ExternalModule extends AbstractExternalModule {
 
         if (strpos(PAGE, 'ExternalModules/manager/control_center.php') !== false) {
             $this->includeJs('js/config.js');
-            $this->setJsSettings(array('modulePrefix' => $this->PREFIX));
+            $this->setJsSettings(['modulePrefix' => $this->PREFIX]);
 
             return;
         }
@@ -116,10 +116,10 @@ class ExternalModule extends AbstractExternalModule {
                 $context = 'create';
             }
             elseif ($_GET['action'] == 'myprojects') {
-                $helper = RCView::a(array('href' => APP_PATH_WEBROOT_PARENT . 'index.php?action=project_ownership'), 'Project Ownership List');
+                $helper = RCView::a(['href' => APP_PATH_WEBROOT_PARENT . 'index.php?action=project_ownership'], 'Project Ownership List');
                 $helper = 'To review and edit ownership of the projects you have access to, visit the ' . $helper . '.';
 
-                $this->setJsSettings(array('ownershipListHelper' => RCView::div(array('class' => 'ownership-list-helper col-sm-12'), $helper)));
+                $this->setJsSettings(['ownershipListHelper' => RCView::div(['class' => 'ownership-list-helper col-sm-12'], $helper)]);
                 $this->includeJs('js/my-projects.js');
                 $this->includeCss('css/my-projects.css');
             }
@@ -155,47 +155,16 @@ class ExternalModule extends AbstractExternalModule {
     }
 
     /**
-     * Gets count of file uploads, saved attributes, and records of a given
-     * project.
-     */
-    function getProjectStats($project_id) {
-        $stats = array();
-
-        $project_id = intval($project_id);
-        $sql = 'SELECT COUNT(e.doc_id) count FROM redcap_edocs_metadata e
-                LEFT JOIN redcap_docs_to_edocs dte ON dte.doc_id = e.doc_id
-                LEFT JOIN redcap_docs d ON d.docs_id = dte.docs_id
-                WHERE e.project_id = "' . $project_id . '" AND d.docs_id IS NULL';
-
-        $count = $this->query($sql);
-        $count = db_fetch_assoc($count);
-        $stats['file_uploads_count'] = $count['count'];
-
-        $count = $this->query('SELECT COUNT(*) count FROM redcap_data WHERE project_id = "' . $project_id . '"');
-        $count = db_fetch_assoc($count);
-        $stats['attr_count'] = $count['count'];
-
-        global $Proj;
-
-        $aux = $Proj;
-        $Proj = new Project($project_id);
-        $stats['records_count'] = Records::getRecordCount();
-        $Proj = $aux;
-
-        return $stats;
-    }
-
-    /**
      * Builds ownership fieldset.
      */
     protected function buildOwnershipFieldset($context, $project_id = null) {
         // Setting up default values.
-        $po_data = array(
+        $po_data = [
             'username' => '',
             'firstname' => '',
             'lastname' => '',
             'email' => '',
-        );
+        ];
 
         // Loading stored values.
         if ($project_id && ($entity = $this->getProjectOwnership($project_id))) {
@@ -203,60 +172,60 @@ class ExternalModule extends AbstractExternalModule {
         }
 
         // Required field marker.
-        $req_ast = RCView::span(array('class' => 'required-ast'), '*') . ' ';
+        $req_ast = RCView::span(['class' => 'required-ast'], '*') . ' ';
 
         // Username field.
-        $output = RCView::span(array(), 'REDCap username (if applicable)') . RCView::br();
-        $output .= RCView::text(array(
+        $output = RCView::span([], 'REDCap username (if applicable)') . RCView::br();
+        $output .= RCView::text([
             'id' => 'project_ownership_username',
             'name' => 'project_ownership_username',
             'class' => 'x-form-text x-form-field po-row',
             'placeholder' => 'Search',
             'value' => $po_data['username'],
-        ));
+        ]);
 
         // Adding search icon to username field.
-        $output .= RCView::img(array('class' => 'search-icon', 'src' => APP_PATH_IMAGES . 'magnifier.png'));
+        $output .= RCView::img(['class' => 'search-icon', 'src' => APP_PATH_IMAGES . 'magnifier.png']);
 
         // Adding ownership auto assign link.
-        $output .= RCView::a(array('href' => '#', 'class' => 'po-auto-assign'), '(I am the owner)');
+        $output .= RCView::a(['href' => '#', 'class' => 'po-auto-assign'], '(I am the owner)');
 
         // Adding helper text to username field.
-        $output .= RCView::div(array('class' => 'newdbsub po-row'), 'If the project owner does not have a REDCap account, leave this field blank and fill the information manually below.');
+        $output .= RCView::div(['class' => 'newdbsub po-row'], 'If the project owner does not have a REDCap account, leave this field blank and fill the information manually below.');
 
         // Building first and last name fields.
         $name_fields = '';
-        foreach (array('firstname' => 'First name', 'lastname' => 'Last name') as $suffix => $label) {
+        foreach (['firstname' => 'First name', 'lastname' => 'Last name'] as $suffix => $label) {
             $field_name = 'project_ownership_' . $suffix;
-            $name_fields .= RCView::div(array(), $req_ast . RCView::span(array('class' => 'po-info-label'), $label) . RCView::br() . RCView::text(array(
+            $name_fields .= RCView::div([], $req_ast . RCView::span(['class' => 'po-info-label'], $label) . RCView::br() . RCView::text([
                 'id' => $field_name,
                 'name' => $field_name,
                 'class' => 'x-form-text x-form-field po-required-info',
                 'value' => $po_data[$suffix],
-            )));
+            ]));
         }
 
         // Wrapping first and last name fields into a single row.
-        $output .= RCView::div(array('class' => 'po-name-wrapper clearfix'), $name_fields);
+        $output .= RCView::div(['class' => 'po-name-wrapper clearfix'], $name_fields);
 
         // Email field.
-        $output .= RCView::div(array(), $req_ast . RCView::span(array('class' => 'po-info-label'), 'Email') . RCView::br() . RCView::text(array(
+        $output .= RCView::div([], $req_ast . RCView::span(['class' => 'po-info-label'], 'Email') . RCView::br() . RCView::text([
             'id' => 'project_ownership_email',
             'name' => 'project_ownership_email',
             'class' => 'x-form-text x-form-field po-required-info po-row',
             'value' => $po_data['email'],
-        )));
+        ]));
 
         // Fieldset title.
-        $output = RCView::td(array('class' => 'po-label po-col'), 'Project Ownership') . RCView::td(array('class' => 'po-col'), $output);
+        $output = RCView::td(['class' => 'po-label po-col'], 'Project Ownership') . RCView::td(['class' => 'po-col'], $output);
 
         // Passing fieldset content to JS.
-        $settings = array(
+        $settings = [
             'context' => $context,
             'userId' => USERID,
             'userInfoAjaxPath' => $this->getUrl('plugins/user_info_ajax.php'),
-            'fieldsetContents' => RCView::tr(array('id' => 'po-tr', 'valign' => 'top'), $output),
-        );
+            'fieldsetContents' => RCView::tr(['id' => 'po-tr', 'valign' => 'top'], $output),
+        ];
 
         if ($context == 'copy') {
             global $lang;
@@ -308,10 +277,10 @@ class ExternalModule extends AbstractExternalModule {
         }
 
         // Specifying required fields for each case.
-        $suffixes = array('username', 'firstname', 'lastname', 'email');
-        $required = empty($_POST['project_ownership_username']) ? array('firstname', 'lastname', 'email') : array('username');
+        $suffixes = ['username', 'firstname', 'lastname', 'email'];
+        $required = empty($_POST['project_ownership_username']) ? ['firstname', 'lastname', 'email'] : ['username'];
 
-        $values = array('pid' => $project_id);
+        $values = ['pid' => $project_id];
         foreach ($suffixes as $suffix) {
             $field_name = 'project_ownership_' . $suffix;
 
