@@ -134,11 +134,63 @@ class ExternalModule extends AbstractExternalModule {
      * @inheritdoc
      */
     function redcap_module_system_enable($version) {
+        $this->checkModuleDependencies();
+
         // Making sure the module is enabled on all projects.
         $this->setSystemSetting(ExternalModules::KEY_ENABLED, true);
 
         // Building project ownership entity.
         EntityDB::buildSchema($this);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    function redcap_module_system_change_version($version, $old_version) {
+        $this->checkModuleDependencies();
+
+        // Making sure we are upgrading from v1.x to 2.x or greater.
+        if (strpos($old_version, 'v1') !== 0 || !is_numeric($version[1]) || $version[1] < 2) {
+            return;
+        }
+
+        // Making sure project ownership entity has not been initialized yet.
+        if (db_query('SELECT 1 FROM redcap_entity_project_ownership LIMIT 1')) {
+            return;
+        }
+
+        // Creating project ownership table.
+        if (!EntityDB::buildSchema($this)) {
+            return;
+        }
+
+        // Getting legacy ownership entries.
+        if (!$q = $this->query('SELECT * FROM redcap_project_ownership')) {
+            return;
+        }
+
+        if (!db_num_rows($q)) {
+            return;
+        }
+
+        // Migrating projects ownership.
+        $factory = new EntityFactory();
+        while ($result = db_fetch_assoc($q)) {
+            $factory->create('project_ownership', $result);
+        }
+    }
+
+    /**
+     * Checks for module dependencies.
+     *
+     * @throws Exception
+     *   Throws an error if dependencies do not meet. Do nothing otherwise.
+     */
+    function checkModuleDependencies() {
+        // Making sure REDCap Entity is enabled.
+        if (!defined('REDCAP_ENTITY_PREFIX')) {
+            throw new Exception('Project Ownership requires REDCap Entity to work.');
+        }
     }
 
     /**
