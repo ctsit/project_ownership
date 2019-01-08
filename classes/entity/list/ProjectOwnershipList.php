@@ -92,8 +92,8 @@ class ProjectOwnershipList extends EntityList {
         return $filters;
     }
 
-    function buildTableRow($data) {
-        $row = parent::buildTableRow($data);
+    function buildTableRow($data, $entity) {
+        $row = parent::buildTableRow($data, $entity);
 
         if ($data['username']) {
             $row['username'] = REDCap::escapeHtml($data['username']);

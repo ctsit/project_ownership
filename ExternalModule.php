@@ -22,7 +22,7 @@ class ExternalModule extends AbstractExternalModule {
     /**
      * @inheritdoc
      */
-    function redcap_every_page_before_render($project_id) {
+    function redcap_every_page_before_render($project_id = null) {
         if (!defined('REDCAP_ENTITY_PREFIX')) {
             $this->delayModuleExecution();
 
@@ -50,7 +50,7 @@ class ExternalModule extends AbstractExternalModule {
 
         $types['project_ownership'] = [
             'label' => 'Project Ownership',
-            'label_plural' => 'Projects Ownership',
+            'label_plural' => 'Projects Ownerships',
             'icon' => 'key',
             'class' => [
                 'name' => 'ProjectOwnership\Entity\ProjectOwnership',
@@ -140,7 +140,7 @@ class ExternalModule extends AbstractExternalModule {
         $this->setSystemSetting(ExternalModules::KEY_ENABLED, true);
 
         // Building project ownership entity.
-        EntityDB::buildSchema($this);
+        EntityDB::buildSchema($this->PREFIX);
     }
 
     /**
