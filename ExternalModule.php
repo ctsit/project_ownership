@@ -160,7 +160,7 @@ class ExternalModule extends AbstractExternalModule {
         }
 
         // Creating project ownership table.
-        if (!EntityDB::buildSchema($this)) {
+        if (!EntityDB::buildSchema($this->PREFIX)) {
             return;
         }
 
