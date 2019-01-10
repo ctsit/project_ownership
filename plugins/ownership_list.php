@@ -5,4 +5,5 @@ require_once dirname(__DIR__) . '/classes/entity/list/ProjectOwnershipList.php';
 use ProjectOwnership\Entity\ProjectOwnershipList;
 
 $list = new ProjectOwnershipList('project_ownership', $module);
-$list->render('global');
+$list->setCols(['pid', 'fullname', 'email', 'username', 'type', 'pi', 'irb', 'last_activity', 'records_count'])
+    ->render('global');

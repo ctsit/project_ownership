@@ -2,7 +2,6 @@
 
 namespace ProjectOwnership\Entity;
 
-use Records;
 use RedCapDB;
 use RCView;
 use REDCap;
@@ -61,22 +60,17 @@ class ProjectOwnershipList extends EntityList {
             ];
         }
 
+        $fields['records_count'] = [
+            'name' => 'Project records count',
+            'type' => 'text',
+            'sql_field' => 'c.record_count',
+        ];
+
         return $fields;
     }
 
-    function getTableHeaderLabels() {
-        $labels = parent::getTableHeaderLabels();
-
-        return [
-            'pid' => $labels['pid'],
-            'fullname' => $labels['fullname'],
-            'email' => $labels['email'],
-            'username' => $labels['username'],
-            'type' => $labels['type'],
-            'pi' => $labels['pi'],
-            'irb' => $labels['irb'],
-            'last_activity' => $labels['last_activity'],
-            'records_count' => 'Project records count',
+    function getColsLabels() {
+        return parent::getColsLabels() + [
             'actions' => 'Actions',
         ];
     }
@@ -104,7 +98,6 @@ class ProjectOwnershipList extends EntityList {
             }
         }
 
-        $row['records_count'] = Records::getRecordCount($data['pid']);
         $row['last_activity'] = date_create($data['last_activity'])->format('m/d/Y');
         $row['actions'] = '-';
 
@@ -119,6 +112,7 @@ class ProjectOwnershipList extends EntityList {
     function getQuery() {
         $query = parent::getQuery()
             ->join('redcap_user_information', 'u', 'u.username = e.username', 'LEFT')
+            ->join('redcap_record_counts', 'c', 'c.project_id = e.pid', 'LEFT')
             ->join('redcap_projects', 'p', 'p.project_id = e.pid');
 
         if (!SUPER_USER && !ACCOUNT_MANAGER) {
