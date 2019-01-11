@@ -160,9 +160,7 @@ class ExternalModule extends AbstractExternalModule {
         }
 
         // Creating project ownership table.
-        if (!EntityDB::buildSchema($this->PREFIX)) {
-            return;
-        }
+        EntityDB::buildSchema($this->PREFIX);
 
         // Getting legacy ownership entries.
         if (!$q = $this->query('SELECT * FROM redcap_project_ownership')) {
@@ -191,19 +189,6 @@ class ExternalModule extends AbstractExternalModule {
         if (!defined('REDCAP_ENTITY_PREFIX')) {
             throw new Exception('Project Ownership requires REDCap Entity to work.');
         }
-    }
-
-    /**
-     * @inheritdoc
-     */
-    function redcap_module_system_disable($version) {
-        // Avoiding this table to be erased due to automatic module disable on
-        // External Modules error handling.
-        // TODO: remove it if and when this error handling becomes configurable.
-        return;
-
-        // Removes project onwership entity.
-        EntityDB::dropSchema($this);
     }
 
     /**
