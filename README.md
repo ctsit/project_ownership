@@ -2,11 +2,22 @@
 A REDCap module to aid in the collection and management of project ownership details.
 
 ## Prerequisites
-- REDCap >= 8.0.3
 
-## Installation
-- Clone this repo into `<redcap-root>/modules/project_ownership_v<version_number>`.
-- Go to **Control Center > Manage External Modules** and enable Project Ownership.
+- REDCap >= 8.7.0
+- [redcap_entity](https://github.com/ctsit/redcap_entity) >= 2.0.0
+
+## Easy Installation
+REDCap Project Ownership is available in the [REDCap Repo](https://redcap.vanderbilt.edu/consortium/modules/index.php).  To install it follow these steps:
+
+- Access your REDCap installation's _View modules available in the REDCap repo_ button at **Control Center > External Modules** to download _Project Ownership_. If it is not already installed on your REDCap system you will also need to install the `redcap_entity` module.
+- Once downloaded, enable Project Ownership and REDCap Entity if it is also needed. Each module will be enabled globally.
+
+
+## Manual Installation
+- Clone this repo into `<redcap-root>/modules/project_ownership_v0.0.0`.
+- Clone [redcap_entity](https://github.com/ctsit/redcap_entity) repo into `<redcap-root>/modules/redcap_entity_v0.0.0`.
+- Go to **Control Center > External Modules** to enable Project Ownership and REDCap Entity. Each module will be enabled globally.
+
 
 ## Collecting project ownership
 The project ownership is collected on project creation page. Three fields are required: first name, last name and email. Alternatively, the user can set a REDCap username, so the required information is pulled from its user account.
@@ -34,11 +45,15 @@ The same fieldset from project creation page may be seen at project settings mod
 ![Project settings page](img/edit_project.png)
 
 ## Projects ownership list
-A global list of projects ownership is accessible at __My Projects__ page.
+A list of project ownership is accessible to users at __My Projects__ page.
 
 ![Ownership list link](img/ownership_list_link.png)
 
-On this list, you have a view to the ownership of projects you have access. From each row you may access links to update ownership information or access the project home page.
+It is accessible to admins on as a link on the Control Center
+
+![Ownership list link in Control Center](img/control_center_link.png)
+
+On this list, you have a view to the ownership of projects you have access to. From each row you may access links to update ownership information or access the project home page.
 
 ![Ownership list](img/ownership_list.png)
 
