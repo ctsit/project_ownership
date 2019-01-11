@@ -35,8 +35,17 @@
             "institution": "University of Florida - CTSI"
         }
     ],
+    "links": {
+       "control-center": [
+          {
+             "name": "Project Ownership",
+             "icon": "user",
+             "url": "plugins/ownership_list.php"
+          }
+       ]
+    },
     "enable-every-page-hooks-on-system-pages": true,
     "compatibility": {
-        "redcap-version-min": "8.0.3"
+        "redcap-version-min": "8.7.0"
     }
 }
