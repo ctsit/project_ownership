@@ -5,14 +5,18 @@
 -- These queries require the last_user concept added via the Report Production Candidates module.  See https://github.com/ctsit/report_production_candidates
 
 -- Create a temporary table for testing ownership backfill operations
-CREATE TABLE rcpo_test (
-    pid INT NOT NULL,
-    username VARCHAR(128),
-    email VARCHAR(128),
-    firstname VARCHAR(128),
-    lastname VARCHAR(128),
-    PRIMARY KEY (pid)
-) collate utf8_unicode_ci;
+CREATE TABLE `rcpo_test` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `created` int(10) unsigned NOT NULL,
+  `updated` int(10) unsigned NOT NULL,
+  `pid` int(10) unsigned NOT NULL,
+  `username` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `firstname` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  `lastname` varchar(255) COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
 
 truncate rcpo_test;
 
@@ -29,8 +33,8 @@ select project_id, project_pi_username, project_pi_email, project_pi_firstname, 
   and (rcpo.email is null or rcpo.email = "")
   and (rcpo.username is null or rcpo.username = "");
 -- set the owner to the PI
-insert into rcpo_test (pid, username, email, firstname, lastname)
-  select project_id, project_pi_username, project_pi_email, project_pi_firstname, project_pi_lastname
+insert into rcpo_test (created, updated, pid, username, email, firstname, lastname)
+  select UNIX_TIMESTAMP(now()) as created, UNIX_TIMESTAMP(now()) as updated, project_id, project_pi_username, project_pi_email, project_pi_firstname, project_pi_lastname
   from redcap_projects as rcp left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
   where project_pi_email is not null and project_pi_email != ""
   and (rcpo.email is null or rcpo.email = "")
@@ -75,8 +79,8 @@ where (rcpo.email is null or rcpo.email = "")
   and datediff(now(), rcui.user_lastlogin) < 180
   and pc.username is null;
 -- Set owner to creator
-insert into rcpo_test (pid, username, email, firstname, lastname)
-    select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
+insert into rcpo_test (created, updated, pid, username, email, firstname, lastname)
+    select UNIX_TIMESTAMP(now()) as created, UNIX_TIMESTAMP(now()) as updated, rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
     from redcap_projects as rcp
       inner join redcap_user_information as rcui on (rcp.created_by = rcui.ui_id)
       left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
@@ -113,8 +117,8 @@ where (rcpo.email is null or rcpo.email = "")
   and (rcur.design = 1 or rcur.user_rights = 1 or rcuro.design = 1 or rcuro.user_rights = 1);
 
 -- set owner to last unsuspended user with some perms who logged-in during the last 180 days
-insert into rcpo_test (pid, username, email, firstname, lastname)
-    select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
+insert into rcpo_test (created, updated, pid, username, email, firstname, lastname)
+    select UNIX_TIMESTAMP(now()) as created, UNIX_TIMESTAMP(now()) as updated, rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
     from redcap_projects as rcp
     inner join redcap_project_stats as rcps on (rcp.project_id = rcps.project_id)
     inner join redcap_user_information as rcui on (rcps.last_user = rcui.username)
@@ -201,9 +205,9 @@ where (rcpo.email is null or rcpo.email = "")
 group by rcp.project_id;
 
 -- set owner to the most recently logged non-suspended, authorized user, who logged-in during the last 180 days by project
-insert into rcpo_test (pid, username, email, firstname, lastname)
-  select project_id, username, user_email, user_firstname, user_lastname from
-    (select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname, max(rcui.user_lastlogin) as last_login
+insert into rcpo_test (created, updated, pid, username, email, firstname, lastname)
+  select created, updated, project_id, username, user_email, user_firstname, user_lastname from
+    (select UNIX_TIMESTAMP(now()) as created, UNIX_TIMESTAMP(now()) as updated, rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname, max(rcui.user_lastlogin) as last_login
     from redcap_projects as rcp
     inner join redcap_project_stats as rcps on (rcp.project_id = rcps.project_id)
     left join redcap_user_rights as rcur on (rcp.project_id = rcur.project_id)
@@ -237,8 +241,8 @@ where (rcpo.email is null or rcpo.email = "")
   and rcps.last_user is not null;
 
 -- set owner to last user with some perms
-insert into rcpo_test (pid, username, email, firstname, lastname)
-    select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
+insert into rcpo_test (created, updated, pid, username, email, firstname, lastname)
+    select UNIX_TIMESTAMP(now()) as created, UNIX_TIMESTAMP(now()) as updated, rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
     from redcap_projects as rcp
     inner join redcap_project_stats as rcps on (rcp.project_id = rcps.project_id)
     inner join redcap_user_information as rcui on (rcps.last_user = rcui.username)
@@ -268,9 +272,9 @@ where (rcpo.email is null or rcpo.email = "")
 group by rcp.project_id;
 
 -- set owner to the most recently logged suspended, authorized user by project
-insert into rcpo_test (pid, username, email, firstname, lastname)
-  select project_id, username, user_email, user_firstname, user_lastname from
-    (select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname, max(rcui.user_lastlogin) as last_login
+insert into rcpo_test (created, updated, pid, username, email, firstname, lastname)
+  select created, updated, project_id, username, user_email, user_firstname, user_lastname from
+    (select UNIX_TIMESTAMP(now()) as created, UNIX_TIMESTAMP(now()) as updated, rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname, max(rcui.user_lastlogin) as last_login
     from redcap_projects as rcp
     inner join redcap_project_stats as rcps on (rcp.project_id = rcps.project_id)
     left join redcap_user_rights as rcur on (rcp.project_id = rcur.project_id)
@@ -295,8 +299,8 @@ where (rcpo.email is null or rcpo.email = "")
   and (rcpo.username is null or rcpo.username = "")
   and pc.username is null;
 -- Set owner to creator
-insert into rcpo_test (pid, username, email, firstname, lastname)
-    select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
+insert into rcpo_test (created, updated, pid, username, email, firstname, lastname)
+    select UNIX_TIMESTAMP(now()) as created, UNIX_TIMESTAMP(now()) as updated, rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
     from redcap_projects as rcp
       inner join redcap_user_information as rcui on (rcp.created_by = rcui.ui_id)
       left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
@@ -328,8 +332,8 @@ group by rcp.purpose
 order by qty desc;
 
 -- Set owner to creator
-insert into rcpo_test (pid, username, email, firstname, lastname)
-    select rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
+insert into rcpo_test (created, updated, pid, username, email, firstname, lastname)
+    select UNIX_TIMESTAMP(now()) as created, UNIX_TIMESTAMP(now()) as updated, rcp.project_id, rcui.username, rcui.user_email, rcui.user_firstname, rcui.user_lastname
     from redcap_projects as rcp
       inner join redcap_user_information as rcui on (rcp.created_by = rcui.ui_id)
       left join rcpo_test as rcpo on (rcp.project_id = rcpo.pid)
@@ -339,6 +343,8 @@ insert into rcpo_test (pid, username, email, firstname, lastname)
 
 -- Replace old creator with modern owner
 update rcpo_test set
+created= UNIX_TIMESTAMP(now()),
+updated= UNIX_TIMESTAMP(now()),
 username= "tls",
 email = "tls@ufl.edu",
 firstname= "Taryn",
@@ -347,6 +353,8 @@ where rcpo_test.username = "swehmeyer";
 
 -- Replace old creator with modern owner
 update rcpo_test set
+created= UNIX_TIMESTAMP(now()),
+updated= UNIX_TIMESTAMP(now()),
 username= "c.holman",
 email = "c.holman",
 firstname= "Corinne",
@@ -354,13 +362,13 @@ lastname= "Holman"
 where rcpo_test.username = "cabernat";
 
 -- set ownership manually
-insert into rcpo_test (pid, username, email, firstname, lastname)
+insert into rcpo_test (created, updated, pid, username, email, firstname, lastname)
 values
-(101, "sattam", "maryam.sattari@medicine.ufl.edu", "Maryam", "Sattari");
+(UNIX_TIMESTAMP(now()), UNIX_TIMESTAMP(now()), 101, "sattam", "maryam.sattari@medicine.ufl.edu", "Maryam", "Sattari");
 
-insert into rcpo_test (pid, username, email, firstname, lastname)
+insert into rcpo_test (created, updated, pid, username, email, firstname, lastname)
 values
-(624, "sgilbert", "sgilbert@ufl.edu", "Scott", "Gilbert");
+(UNIX_TIMESTAMP(now()), UNIX_TIMESTAMP(now()), 624, "sgilbert", "sgilbert@ufl.edu", "Scott", "Gilbert");
 
 
 -- Fix collation in rcpo_test

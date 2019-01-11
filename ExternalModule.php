@@ -50,7 +50,7 @@ class ExternalModule extends AbstractExternalModule {
 
         $types['project_ownership'] = [
             'label' => 'Project Ownership',
-            'label_plural' => 'Projects Ownerships',
+            'label_plural' => 'Project Owners',
             'icon' => 'key',
             'class' => [
                 'name' => 'ProjectOwnership\Entity\ProjectOwnership',
