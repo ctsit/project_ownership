@@ -1,4 +1,7 @@
 # REDCap Project Ownership
+
+[![DOI](https://zenodo.org/badge/119551412.svg)](https://zenodo.org/badge/latestdoi/119551412)
+
 A REDCap module to aid in the collection and management of project ownership details. This module collects project ownership data at project creation, requires PI contact details on research projects, and provides interfaces to search, display and edit ownership details.
 
 
