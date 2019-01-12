@@ -1,10 +1,10 @@
 {
     "name": "Project Ownership",
     "namespace": "ProjectOwnership\\ExternalModule",
-    "description": "Collects project onwership at project creation and provides a display for it. <strong><a href=\"https://github.com/ctsit/collect_project_ownership_at_creation\">See full documentation here</a></strong>.",
+    "description": "Collects project ownership data at project creation, requires PI contact details on research projects, and provides interfaces to search, display and edit ownership details. <strong><a href=\"https://github.com/ctsit/project_ownership\">See full documentation here</a></strong>.",
     "permissions": [
         "redcap_module_system_enable",
-        "redcap_module_system_disable",
+        "redcap_module_system_change_version",
         "redcap_every_page_before_render",
         "redcap_every_page_top"
     ],
@@ -28,15 +28,19 @@
             "name": "Tiago Bember",
             "email": "tbembersimeao@ufl.edu",
             "institution": "University of Florida - CTSI"
-        },
-        {
-            "name": "Dileep Rajput",
-            "email": "rajputd@ufl.edu",
-            "institution": "University of Florida - CTSI"
         }
     ],
+    "links": {
+       "control-center": [
+          {
+             "name": "Project Ownership",
+             "icon": "user",
+             "url": "plugins/ownership_list.php"
+          }
+       ]
+    },
     "enable-every-page-hooks-on-system-pages": true,
     "compatibility": {
-        "redcap-version-min": "8.0.3"
+        "redcap-version-min": "8.7.0"
     }
 }

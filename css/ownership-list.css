@@ -2,6 +2,10 @@
     max-width: 1500px;
 }
 
-#project-ownership-list a {
-    color: #800000;
+#redcap_entity_list-project_ownership a {
+    color: #a54d4d;
+}
+
+#redcap_entity_list-project_ownership a.btn-success {
+    color: white;
 }

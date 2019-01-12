@@ -2,6 +2,20 @@
 All notable changes to the Project Ownership module will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] - 2019-01-12
+### Added
+- Add Authors file (Philip Chase)
+- Add DOI to README (Philip Chase)
+- Add control center link to ownership list and set min redcap version to 8.7.0 (Philip Chase)
+- Add migration script for 1.x to 2.x upgrade. (Tiago Bember Simeao)
+
+### Changed
+- Update backfilling scripts to conform to the new schema for storing project ownership data (Philip Chase)
+- Update README for redcap_entity prereq and features (Philip Chase)
+- Refactor for REDCap Entity 2.0.0. (Tiago Bember Simeao)
+- Include default value for $project_id in redcap_every_page_before_render to fix Issue #26. (Marly Cormar)
+
+
 ## [1.2.1] - 2018-07-12
 ### Changed
 - Add documentation that describes PI information autocomplete feature. (Dileep Rajput)
