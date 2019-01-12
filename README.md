@@ -1,5 +1,6 @@
 # REDCap Project Ownership
-A REDCap module to aid in the collection and management of project ownership details.
+A REDCap module to aid in the collection and management of project ownership details. This module collects project ownership data at project creation, requires PI contact details on research projects, and provides interfaces to search, display and edit ownership details.
+
 
 ## Prerequisites
 
@@ -20,7 +21,7 @@ REDCap Project Ownership is available in the [REDCap Repo](https://redcap.vander
 
 
 ## Collecting project ownership
-The project ownership is collected on project creation page. Three fields are required: first name, last name and email. Alternatively, the user can set a REDCap username, so the required information is pulled from its user account.
+The project ownership details are collected on project creation page. Three fields are required: first name, last name and email. Alternatively, the user can set a REDCap username, so the required information is pulled from that user account.
 
 ![Project creation page](img/create_project.png)
 
@@ -30,7 +31,7 @@ Users may click on "I am the owner" link to auto-assign the ownership.
 ![Ownership auto assign](img/auto_assign.gif)
 
 ### Autocomplete from PI information
-If the purpose of the project is "Research", the ownership fields are auto completed as the PI information is filled out.
+If the purpose of the project is "Research", the ownership fields are auto-completed as the PI information is filled out.
 
 ![Autocomplete from PI information](img/pi_to_ownership_autofill.gif)
 
@@ -49,7 +50,7 @@ A list of project ownership is accessible to users at __My Projects__ page.
 
 ![Ownership list link](img/ownership_list_link.png)
 
-It is accessible to admins on as a link on the Control Center
+It is accessible to admins as a link in the Control Center.
 
 ![Ownership list link in Control Center](img/control_center_link.png)
 
