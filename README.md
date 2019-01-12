@@ -9,7 +9,7 @@ A REDCap module to aid in the collection and management of project ownership det
 ## Easy Installation
 REDCap Project Ownership is available in the [REDCap Repo](https://redcap.vanderbilt.edu/consortium/modules/index.php).  To install it follow these steps:
 
-- Access your REDCap installation's _View modules available in the REDCap repo_ button at **Control Center > External Modules** to download _Project Ownership_. If it is not already installed on your REDCap system you will also need to install the `redcap_entity` module.
+- Access your REDCap installation's _View modules available in the REDCap repo_ button at **Control Center > External Modules** to download _Project Ownership_. If it is not already installed on your REDCap system, you will also need to install the `redcap_entity` module.
 - Once downloaded, enable Project Ownership and REDCap Entity if it is also needed. Each module will be enabled globally.
 
 
