@@ -35,7 +35,7 @@
           {
              "name": "Project Ownership",
              "icon": "user",
-             "url": "plugins/ownership_list.php"
+             "url": "plugins/admin_ownership_list.php"
           }
        ]
     },
