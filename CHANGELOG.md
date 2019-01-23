@@ -2,6 +2,11 @@
 All notable changes to the Project Ownership module will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.1] - 2019-01-23
+### Changed
+- Move admin ownership list to its own URL to prevent permission errors for non-admins (Philip Chase)
+
+
 ## [2.0.0] - 2019-01-12
 ### Added
 - Add Authors file (Philip Chase)
