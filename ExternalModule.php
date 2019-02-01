@@ -6,6 +6,7 @@
 
 namespace ProjectOwnership\ExternalModule;
 
+use Exception;
 use ExternalModules\AbstractExternalModule;
 use ExternalModules\ExternalModules;
 use Project;
