@@ -90,7 +90,12 @@ $(document).ready(function() {
             ownershipFieldsInit = true;
 
             if ($('#purpose').val() === '2' && !piFieldsInit) {
-                $('[name="project_pi_' + key + '"]').val($(this).val());
+
+                urlp = new URLSearchParams(window.location.search);
+                // only autopopulate pi fields if on project creation
+                if ( urlp.get('action') == 'create') {
+                    $('[name="project_pi_' + key + '"]').val($(this).val());
+                }
             }
         });
     });
