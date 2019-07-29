@@ -2,6 +2,11 @@
 All notable changes to the Project Ownership module will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.3] - 2019-07-29
+### Added
+- Fix issue #38 (Kyle Chesney)
+
+
 ## [2.0.2] - 2019-02-01
 ### Added
 - Including Exception class namespace. (Tiago Bember Simeao)
