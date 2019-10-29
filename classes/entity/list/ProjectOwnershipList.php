@@ -83,13 +83,9 @@ class ProjectOwnershipList extends EntityList {
     function buildTableRow($data, $entity) {
         $row = parent::buildTableRow($data, $entity);
 
-        if ($data['username']) {
-            $row['username'] = REDCap::escapeHtml($data['username']);
-
-            if (SUPER_USER || ACCOUNT_MANAGER) {
-                $url = APP_PATH_WEBROOT . 'ControlCenter/view_users.php?username=' . $row['username'];
-                $row['username'] = RCView::a(['href' => $url, 'target' => '_blank'], $row['username']);
-            }
+        if ($data['username'] && (SUPER_USER || ACCOUNT_MANAGER)) {
+            $url = APP_PATH_WEBROOT . 'ControlCenter/view_users.php?username=' . REDCap::escapeHtml($data['username']);
+            $row['fullname'] = RCView::a(['href' => $url, 'target' => '_blank'], $row['fullname']);
         }
 
         $row['last_activity'] = date_create($data['last_activity'])->format('m/d/Y');
