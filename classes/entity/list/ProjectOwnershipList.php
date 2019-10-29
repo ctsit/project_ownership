@@ -60,12 +60,6 @@ class ProjectOwnershipList extends EntityList {
             ];
         }
 
-        $fields['records_count'] = [
-            'name' => 'Project records count',
-            'type' => 'text',
-            'sql_field' => 'c.record_count',
-        ];
-
         return $fields;
     }
 
