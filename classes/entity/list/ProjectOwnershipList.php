@@ -18,6 +18,9 @@ class ProjectOwnershipList extends EntityList {
             $fields[$key]['sql_field'] = 'IFNULL(e.' . $key . ', u.user_' . $key . ')';
         }
 
+        // Prevent REDCap entity from trying to assign an empty email address
+        $fields['email']['type'] = 'text';
+
         $fields['fullname'] = [
             'name' => 'Owner name',
             'type' => 'text',
@@ -60,12 +63,6 @@ class ProjectOwnershipList extends EntityList {
             ];
         }
 
-        $fields['records_count'] = [
-            'name' => 'Project records count',
-            'type' => 'text',
-            'sql_field' => 'c.record_count',
-        ];
-
         return $fields;
     }
 
@@ -89,21 +86,23 @@ class ProjectOwnershipList extends EntityList {
     function buildTableRow($data, $entity) {
         $row = parent::buildTableRow($data, $entity);
 
-        if ($data['username']) {
-            $row['username'] = REDCap::escapeHtml($data['username']);
+        if ($data['username'] && (SUPER_USER || ACCOUNT_MANAGER)) {
+            $url = APP_PATH_WEBROOT . 'ControlCenter/view_users.php?username=' . REDCap::escapeHtml($data['username']);
+            $row['fullname'] = RCView::a(['href' => $url, 'target' => '_blank'], $row['fullname']);
+        }
 
-            if (SUPER_USER || ACCOUNT_MANAGER) {
-                $url = APP_PATH_WEBROOT . 'ControlCenter/view_users.php?username=' . $row['username'];
-                $row['username'] = RCView::a(['href' => $url, 'target' => '_blank'], $row['username']);
-            }
+        if ($data['email']) {
+            $url = 'mailto:' . $data['email'];
+            $row['email'] = RCView::a(['href' => $url, 'target' => '_blank'], $row['email']);
         }
 
         $row['last_activity'] = date_create($data['last_activity'])->format('m/d/Y');
-        $row['actions'] = '-';
 
         if (SUPER_USER || ACCOUNT_MANAGER || !empty($data['is_project_manager'])) {
             $url = APP_PATH_WEBROOT . 'ProjectSetup/index.php?pid=' . REDCap::escapeHtml($data['pid']) . '&open_project_edit_popup=1';
             $row['actions'] = RCView::a(['href' => $url, 'class' => 'btn btn-xs btn-success', 'target' => '_blank'], 'assign owner');
+        } else {
+            $row['actions'] = '-';
         }
 
         return $row;
