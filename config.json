@@ -30,6 +30,27 @@
             "institution": "University of Florida - CTSI"
         }
     ],
+    "system-settings": [
+        {
+            "name": "Additional Text Toggle",
+            "key": "additional_text_toggle",
+            "type": "checkbox"
+        },
+        {
+            "name": "Additional Project Ownership Text",
+            "key": "additional_text",
+            "type": "rich-text",
+            "branchingLogic": {
+                "conditions":
+                [
+                    {
+                        "field": "additional_text_toggle",
+                        "value": true
+                    }
+                ]
+            }
+        }
+    ],
     "links": {
        "control-center": [
           {
