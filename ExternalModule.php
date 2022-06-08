@@ -262,6 +262,14 @@ class ExternalModule extends AbstractExternalModule {
             'value' => $po_data['email'],
         ]));
 
+        // Configurable text field.
+        if ($this->getSystemSetting("additional_text_toggle")) {
+            $output .= RCView::div(
+                ['class' => 'po-row'],
+                $this->getSystemSetting("additional_text")
+            );
+        }
+
         // Fieldset title.
         $output = RCView::td(['class' => 'po-label po-col'], 'Project Ownership') . RCView::td(['class' => 'po-col'], $output);
 
