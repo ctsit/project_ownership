@@ -49,6 +49,11 @@
                     }
                 ]
             }
+        },
+        {
+            "name": "Enable features intended for use at the University of Florida",
+            "key": "enable_uf_features",
+            "type": "checkbox"
         }
     ],
     "links": {
