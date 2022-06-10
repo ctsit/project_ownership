@@ -128,7 +128,8 @@ class ProjectOwnershipList extends EntityList {
     function setCols($cols) {
         $EM = new ExternalModule();
         if ($EM->getSystemSetting('enable_uf_features')) {
-            $cols = array_merge($cols, ['billable', 'sequestered']);
+            if ($EM->getSystemSetting("show_billable_column")) { array_push($cols, "billable"); }
+            if ($EM->getSystemSetting("show_sequestered_column")) { array_push($cols, "sequestered"); }
         }
 
         return parent::setCols($cols);

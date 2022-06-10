@@ -71,3 +71,4 @@ This module forces the collection of project ownership information, but it canno
 
 - "Additional Text Toggle": Toggle showing of "Additional Project Ownership Text"
 - "Additional Project Ownership Text": A configurable rich-text field that will be displayed at the end of the Project Ownership portion of the Project Settings menu when creating or modifying a project.
+- "Enable features intended for use at the University of Florida": Enables features intended for use on UF CTSI-IT REDCap instances which are likely not useful for other institutions.
