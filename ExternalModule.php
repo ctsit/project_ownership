@@ -79,6 +79,14 @@ class ExternalModule extends AbstractExternalModule {
                     'name' => 'Owner last name',
                     'type' => 'text',
                 ],
+                'billable' => [
+                    'name' => 'Billable',
+                    'type' => 'integer',
+                ],
+                'sequestered' => [
+                    'name' => 'Sequestered',
+                    'type' => 'integer',
+                ],
             ],
         ];
 

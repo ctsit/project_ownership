@@ -49,6 +49,39 @@
                     }
                 ]
             }
+        },
+        {
+            "name": "Enable features intended for use at the University of Florida",
+            "key": "enable_uf_features",
+            "type": "checkbox"
+        },
+        {
+            "name": "Show billable column",
+            "key": "show_billable_column",
+            "type": "checkbox",
+            "branchingLogic": {
+                "conditions":
+                [
+                    {
+                        "field": "enable_uf_features",
+                        "value": true
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Show sequestered column",
+            "key": "show_sequestered_column",
+            "type": "checkbox",
+            "branchingLogic": {
+                "conditions":
+                [
+                    {
+                        "field": "enable_uf_features",
+                        "value": true
+                    }
+                ]
+            }
         }
     ],
     "links": {

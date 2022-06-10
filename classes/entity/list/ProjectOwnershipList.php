@@ -2,10 +2,13 @@
 
 namespace ProjectOwnership\Entity;
 
+require_once dirname(__DIR__) . '/../../ExternalModule.php';
+
 use RedCapDB;
 use RCView;
 use REDCap;
 use REDCapEntity\EntityList;
+use ProjectOwnership\ExternalModule\ExternalModule;
 
 class ProjectOwnershipList extends EntityList {
 
@@ -120,6 +123,16 @@ class ProjectOwnershipList extends EntityList {
         }
 
         return $query;
+    }
+
+    function setCols($cols) {
+        $EM = new ExternalModule();
+        if ($EM->getSystemSetting('enable_uf_features')) {
+            if ($EM->getSystemSetting("show_billable_column")) { array_push($cols, "billable"); }
+            if ($EM->getSystemSetting("show_sequestered_column")) { array_push($cols, "sequestered"); }
+        }
+
+        return parent::setCols($cols);
     }
 
     function getSortableColumns() {
