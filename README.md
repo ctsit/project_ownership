@@ -72,3 +72,11 @@ This module forces the collection of project ownership information, but it canno
 - "Additional Text Toggle": Toggle showing of "Additional Project Ownership Text"
 - "Additional Project Ownership Text": A configurable rich-text field that will be displayed at the end of the Project Ownership portion of the Project Settings menu when creating or modifying a project.
 - "Enable features intended for use at the University of Florida": Enables features intended for use on UF CTSI-IT REDCap instances which are likely not useful for other institutions.
+
+## Upgrades
+
+REDCap entity does not have a facility to upgrade the schema of its tables. As such, any such changes have to be applied manually at module upgrade. These versions of project_ownership introduce schema changes:
+
+### 2.1.0
+
+Adds two columns to support UF-specific billing workflows. Run the SQL file [schema/2.1.0/upgrade.sql](./schema/2.1.0/upgrade.sql) if you want these changes.
