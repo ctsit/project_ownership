@@ -66,3 +66,17 @@ The Project Ownership List is accessible via the custom action, _project\_owners
 ## Backfilling project ownership
 
 This module forces the collection of project ownership information, but it cannot address a long history of missing ownership info.  If some guess as to the ownership is needed, that can be addressed with heuristics that guess at ownership info from the REDCap database.  University of Florida's CTS-IT did this for UF's primary REDCap environment.  The product of that work is available in the form of two SQL files [backfill\_project\_ownership\_test.sql](doc/backfill_project_ownership_test.sql) and [backfill\_project\_ownership.sql](doc/backfill_project_ownership.sql) These files gleen ownership data from the REDCap database using 16 queries of PI, creator, user-authorization, user activity and login data. They produce a reasonable guess of who is likely to care about the data in a project and be available to speak with authority about that data. These files are somewhat specific to UF and would need to be adapted to local requirements before use at other institutions. Specifically, the records in the paid_creators table and some individual project records would have no meaning outside of UF.
+
+## System Level Configuration
+
+- "Additional Text Toggle": Toggle showing of "Additional Project Ownership Text"
+- "Additional Project Ownership Text": A configurable rich-text field that will be displayed at the end of the Project Ownership portion of the Project Settings menu when creating or modifying a project.
+- "Enable features intended for use at the University of Florida": Enables features intended for use on UF CTSI-IT REDCap instances which are likely not useful for other institutions.
+
+## Upgrades
+
+REDCap entity does not have a facility to upgrade the schema of its tables. As such, any such changes have to be applied manually at module upgrade. These versions of project_ownership introduce schema changes:
+
+### 2.1.0
+
+Adds two columns to support UF-specific billing workflows. Run the SQL file [schema/2.1.0/upgrade.sql](./schema/2.1.0/upgrade.sql) if you want these changes.

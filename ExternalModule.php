@@ -79,6 +79,14 @@ class ExternalModule extends AbstractExternalModule {
                     'name' => 'Owner last name',
                     'type' => 'text',
                 ],
+                'billable' => [
+                    'name' => 'Billable',
+                    'type' => 'integer',
+                ],
+                'sequestered' => [
+                    'name' => 'Sequestered',
+                    'type' => 'integer',
+                ],
             ],
         ];
 
@@ -253,6 +261,14 @@ class ExternalModule extends AbstractExternalModule {
             'class' => 'x-form-text x-form-field po-required-info po-row',
             'value' => $po_data['email'],
         ]));
+
+        // Configurable text field.
+        if ($this->getSystemSetting("additional_text_toggle")) {
+            $output .= RCView::div(
+                ['class' => 'po-row'],
+                $this->getSystemSetting("additional_text")
+            );
+        }
 
         // Fieldset title.
         $output = RCView::td(['class' => 'po-label po-col'], 'Project Ownership') . RCView::td(['class' => 'po-col'], $output);

@@ -30,6 +30,60 @@
             "institution": "University of Florida - CTSI"
         }
     ],
+    "system-settings": [
+        {
+            "name": "Additional Text Toggle",
+            "key": "additional_text_toggle",
+            "type": "checkbox"
+        },
+        {
+            "name": "Additional Project Ownership Text",
+            "key": "additional_text",
+            "type": "rich-text",
+            "branchingLogic": {
+                "conditions":
+                [
+                    {
+                        "field": "additional_text_toggle",
+                        "value": true
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Enable features intended for use at the University of Florida",
+            "key": "enable_uf_features",
+            "type": "checkbox"
+        },
+        {
+            "name": "Show billable column",
+            "key": "show_billable_column",
+            "type": "checkbox",
+            "branchingLogic": {
+                "conditions":
+                [
+                    {
+                        "field": "enable_uf_features",
+                        "value": true
+                    }
+                ]
+            }
+        },
+        {
+            "name": "Show sequestered column",
+            "key": "show_sequestered_column",
+            "type": "checkbox",
+            "branchingLogic": {
+                "conditions":
+                [
+                    {
+                        "field": "enable_uf_features",
+                        "value": true
+                    }
+                ]
+            }
+        }
+    ],
     "links": {
        "control-center": [
           {
