@@ -2,6 +2,18 @@
 All notable changes to the Project Ownership module will be documented in this file.
 This project adheres to [Semantic Versioning](http://semver.org/).
 
+
+## [2.1.0] - 2022-06-28
+### Added
+- Add billable and sequestered flag (Kyle Chesney)
+- Add configurable text field at the system level (Kyle Chesney)
+
+### Changed
+- Allow mailto from email column by overriding Entity default functionality (Kyle Chesney)
+- Link to user account in owner name if viewer is SUPERURSER or ACCOUNT_MANAGER remove Owner Account column (Kyle Chesney)
+- Remove records_count field (Kyle Chesney)
+
+
 ## [2.0.3] - 2019-07-29
 ### Added
 - Fix issue #38 (Kyle Chesney)
