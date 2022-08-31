@@ -172,7 +172,7 @@ class ExternalModule extends AbstractExternalModule {
         EntityDB::buildSchema($this->PREFIX);
 
         // Getting legacy ownership entries.
-        if (!$q = $this->query('SELECT * FROM redcap_project_ownership')) {
+        if (!$q = $this->framework->query('SELECT * FROM redcap_project_ownership', [])) {
             return;
         }
 
@@ -322,7 +322,7 @@ class ExternalModule extends AbstractExternalModule {
             //
             // TODO: improve this, since concurrent requests can lead to
             // inconsistencies.
-            $q = $this->query('SELECT project_id FROM redcap_projects ORDER BY project_id DESC LIMIT 1');
+            $q = $this->framework->query('SELECT project_id FROM redcap_projects ORDER BY project_id DESC LIMIT 1', []);
 
             if (db_num_rows($q)) {
                 $row = db_fetch_assoc($q);

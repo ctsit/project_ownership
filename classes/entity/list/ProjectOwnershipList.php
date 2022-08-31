@@ -91,7 +91,7 @@ class ProjectOwnershipList extends EntityList {
 
         // Don't show deleted projects
         $EM = new ExternalModule();
-        $q = $EM->query('SELECT date_deleted FROM redcap_projects WHERE project_id = ' . $data['pid']);
+        $q = $EM->framework->query('SELECT date_deleted FROM redcap_projects WHERE project_id = ?', [$data['pid']]);
         $result = db_fetch_assoc($q);
         if ($result['date_deleted']) {
             // https://stackoverflow.com/a/2114029/7418735
