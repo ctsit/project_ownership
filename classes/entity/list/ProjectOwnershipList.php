@@ -89,6 +89,15 @@ class ProjectOwnershipList extends EntityList {
     function buildTableRow($data, $entity) {
         $row = parent::buildTableRow($data, $entity);
 
+        // Don't show deleted projects
+        $EM = new ExternalModule();
+        $q = $EM->query('SELECT date_deleted FROM redcap_projects WHERE project_id = ' . $data['pid']);
+        $result = db_fetch_assoc($q);
+        if ($result['date_deleted']) {
+            // https://stackoverflow.com/a/2114029/7418735
+            if (date('Y-m-d h:i:s') > $result['date_deleted']) return null;
+        }
+
         if ($data['username'] && (SUPER_USER || ACCOUNT_MANAGER)) {
             $url = APP_PATH_WEBROOT . 'ControlCenter/view_users.php?username=' . REDCap::escapeHtml($data['username']);
             $row['fullname'] = RCView::a(['href' => $url, 'target' => '_blank'], $row['fullname']);
