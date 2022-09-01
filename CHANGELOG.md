@@ -3,6 +3,13 @@ All notable changes to the Project Ownership module will be documented in this f
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [2.2.0] - 2022-09-01
+### Changed
+- Update author to CTSI support listserv Add Kyle Chesney to AUTHORS.md in alphabetical order (Kyle Chesney)
+- Update module to use Framework version 8 Update EM queries to use prepared statement syntax (Kyle Chesney)
+- Stop showing deleted projects in project ownership UI (Philip Chase)
+
+
 ## [2.1.0] - 2022-06-28
 ### Added
 - Add billable and sequestered flag (Kyle Chesney)
