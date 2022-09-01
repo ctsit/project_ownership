@@ -115,7 +115,8 @@ class ProjectOwnershipList extends EntityList {
         $query = parent::getQuery()
             ->join('redcap_user_information', 'u', 'u.username = e.username', 'LEFT')
             ->join('redcap_record_counts', 'c', 'c.project_id = e.pid', 'LEFT')
-            ->join('redcap_projects', 'p', 'p.project_id = e.pid');
+            ->join('redcap_projects', 'p', 'p.project_id = e.pid')
+            ->condition('date_deleted', null);
 
         if (!SUPER_USER && !ACCOUNT_MANAGER) {
             $query->join('redcap_user_rights', 'up', 'up.project_id = e.pid AND up.username = "' . db_escape(USERID) . '"');
