@@ -81,13 +81,13 @@ class ExternalModule extends AbstractExternalModule {
                 ],
                 'billable' => [
                     'name' => 'Billable',
-                    'type' => 'integer',
+                    'type' => 'boolean',
                 ],
                 'sequestered' => [
                     'name' => 'Sequestered',
-                    'type' => 'integer',
+                    'type' => 'boolean',
                 ],
-            ],
+            ]
         ];
 
         return $types;
