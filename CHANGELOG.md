@@ -3,6 +3,11 @@ All notable changes to the Project Ownership module will be documented in this f
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [2.3.0] - 2022-09-06
+### Added
+- Allow edit of billable and sequestered booleans on Control Center page (Kyle Chesney)
+
+
 ## [2.2.0] - 2022-09-01
 ### Changed
 - Update author to CTSI support listserv Add Kyle Chesney to AUTHORS.md in alphabetical order (Kyle Chesney)
