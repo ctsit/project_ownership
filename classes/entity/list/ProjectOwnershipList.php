@@ -42,6 +42,12 @@ class ProjectOwnershipList extends EntityList {
             ],
         ];
 
+        $fields['creation_time'] = [
+            'name' => 'Project Creation time',
+            'type' => 'text',
+            'sql_field' => 'p.creation_time',
+        ];
+
         $fields['pi'] = [
             'name' => 'PI name',
             'type' => 'text',
@@ -100,6 +106,8 @@ class ProjectOwnershipList extends EntityList {
         }
 
         $row['last_activity'] = date_create($data['last_activity'])->format('m/d/Y');
+
+        $row['creation_time'] = date_create($data['creation_time'])->format('m/d/Y');
 
         if (SUPER_USER || ACCOUNT_MANAGER || !empty($data['is_project_manager'])) {
             $url = APP_PATH_WEBROOT . 'ProjectSetup/index.php?pid=' . REDCap::escapeHtml($data['pid']) . '&open_project_edit_popup=1';
