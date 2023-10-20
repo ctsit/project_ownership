@@ -3,6 +3,11 @@ All notable changes to the Project Ownership module will be documented in this f
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [2.4.0] - 2023-10-20
+### Added
+- Show creation_time in ownership_list plugin page (Kyle Chesney)
+
+
 ## [2.3.0] - 2022-09-06
 ### Added
 - Allow edit of billable and sequestered booleans on Control Center page (Kyle Chesney)
