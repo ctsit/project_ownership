@@ -8,7 +8,7 @@ A REDCap module to aid in the collection and management of project ownership det
 ## Prerequisites
 
 - REDCap >= 8.7.0
-- [redcap_entity](https://github.com/ctsit/redcap_entity) >= 2.0.0
+- [redcap_entity](https://github.com/ctsit/redcap_entity) >= 2.3.8
 
 ## Easy Installation
 REDCap Project Ownership is available in the [REDCap Repo](https://redcap.vanderbilt.edu/consortium/modules/index.php).  To install it follow these steps:
