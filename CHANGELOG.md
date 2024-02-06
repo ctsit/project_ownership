@@ -3,6 +3,12 @@ All notable changes to the Project Ownership module will be documented in this f
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [2.4.1] - 2024-02-06
+### Changed
+- Check for definition of USERID at start of buildOwnershipFieldset Prevents crash email from being sent to admins (@ChemiKyle, #59, #66)
+- Document the requirement for REDCap Entity 2.3.8 or higher (@pbchase)
+
+
 ## [2.4.0] - 2023-10-20
 ### Added
 - Show creation_time in ownership_list plugin page (Kyle Chesney)
