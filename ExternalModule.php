@@ -204,6 +204,7 @@ class ExternalModule extends AbstractExternalModule {
      * Builds ownership fieldset.
      */
     protected function buildOwnershipFieldset($context, $project_id = null) {
+        if (!defined('USERID')) { return; } // prevent error email from unauthorized page load attempts
         // Setting up default values.
         $po_data = [
             'username' => '',
