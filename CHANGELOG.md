@@ -3,6 +3,11 @@ All notable changes to the Project Ownership module will be documented in this f
 This project adheres to [Semantic Versioning](http://semver.org/).
 
 
+## [2.4.2] - 2024-02-08
+### Changed
+- Only add billable and sequestered types if enable_uf_features is selected. Without this change, anyone who upgraded from <2.1.0 may have been unable to save new project owners (@ChemiKyle)
+
+
 ## [2.4.1] - 2024-02-06
 ### Changed
 - Check for definition of USERID at start of buildOwnershipFieldset Prevents crash email from being sent to admins (@ChemiKyle, #59, #66)
