@@ -87,7 +87,7 @@ class ExternalModule extends AbstractExternalModule {
                     'name' => 'Billable',
                     'type' => 'boolean'
                 ];
-                $types['project_ownership']['properies']['sequestered'] = [
+                $types['project_ownership']['properties']['sequestered'] = [
                     'name' => 'Sequestered',
                     'type' => 'boolean',
                 ];
