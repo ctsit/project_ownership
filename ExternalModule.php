@@ -79,16 +79,19 @@ class ExternalModule extends AbstractExternalModule {
                     'name' => 'Owner last name',
                     'type' => 'text',
                 ],
-                'billable' => [
-                    'name' => 'Billable',
-                    'type' => 'boolean',
-                ],
-                'sequestered' => [
-                    'name' => 'Sequestered',
-                    'type' => 'boolean',
-                ],
             ]
         ];
+
+        if ($this->getSystemSetting('enable_uf_features')) {
+               $types['project_ownership']['properties']['billable'] = [
+                    'name' => 'Billable',
+                    'type' => 'boolean'
+                ];
+                $types['project_ownership']['properties']['sequestered'] = [
+                    'name' => 'Sequestered',
+                    'type' => 'boolean',
+                ];
+            }
 
         return $types;
     }
